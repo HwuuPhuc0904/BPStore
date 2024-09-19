@@ -2,12 +2,24 @@ import { useState } from 'react'
 import { Dialog, DialogPanel } from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import FlashSaleCardHorizontal from '../../../Components/CardSale/FlashSaleCardHorizontal'
+import ImageSlider from '../../../Components/ImageSlider'
+import CardProductVertical from '../../../Components/CardProduct/cardProductVertical'
+import InterfaceProduct from '../../../Components/InterfaceProduct'
 
 const navigation = [
   { name: 'Product', href: '#' },
   { name: 'Features', href: '#' },
   { name: 'Marketplace', href: '#' },
   { name: 'About me', href: '#' },
+]
+
+const categories = [
+  { name: 'Đồ điện tử', src: 'icons/electronics.png' },
+  { name: 'Điện thoại', src: 'icons/smartphone.png' },
+  { name: 'Nhà bếp', src: 'icons/kitchen.png' },
+  { name: 'Quần áo', src: 'icons/clother.png' },
+  { name: 'Mỹ Phẩm', src: 'icons/cosmetics.png' },
+  {name: 'Sách', src: 'icons/book.png'}
 ]
 
 export default function Home() {
@@ -25,9 +37,10 @@ export default function Home() {
     // More products...
   ]
 
+
   return (
-    <div className="bg-black ">
-      <header className="absolute inset-x-0 top-0 z-50">
+    <div className="bg-white ">
+      <header className="absolute inset-x-0 top-0 z-50 bg-black bg-transparent">
         <nav aria-label="Global" className="flex items-center justify-between p-6 lg:px-8">
           <div className="flex lg:flex-1">
             <a href="#" className="-m-1.5 p-1.5">
@@ -99,7 +112,7 @@ export default function Home() {
         </Dialog>
       </header>
 
-      <div className="relative isolate px-6 pt-14 lg:px-8">
+      <div className="relative isolate px-6 pt-14 lg:px-8 bg-black">
         <div
           aria-hidden="true"
           className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
@@ -178,24 +191,55 @@ export default function Home() {
 
 
  {/*this is flash sale list */}
-      <div style={{width: '100%'}}>
-        <img src = "flashsalepic_3.png" alt = "none" style = {{width : '100%' , height : '500px', objectFit: 'cover'}}></img>
-      </div>
+      <ImageSlider/>  
 
-      <div className = "bg-white">
-           <div>
-                <h1 className="text-red-500 text-2xl font-bold">Siêu Flashsale Tưng Bừng</h1>
-                <div>
-                  <FlashSaleCardHorizontal/>
-                </div>
-            </div>
+  {/*this is fearture list*/}
+
+  <div className="grid grid-cols-6 grid-rows-1 gap-0 mt-4">
+      <div > <InterfaceProduct name = {categories[0].name} src = {categories[0].src}/> </div>
+      <div > <InterfaceProduct name = {categories[1].name} src = {categories[1].src}/> </div>
+      <div ><InterfaceProduct name = {categories[2].name} src = {categories[2].src}/></div>
+      <div ><InterfaceProduct name = {categories[3].name} src = {categories[3].src}/></div>
+      <div ><InterfaceProduct name = {categories[4].name} src = {categories[4].src}/></div>
+      <div ><InterfaceProduct name = {categories[5].name} src = {categories[5].src}/></div>
+  </div>
     
 
 
-        </div>
+  {/*this is flash sale grid*/}
+  
+    <div className = "bg-white mt-5">
+      <div className=" w-4/5 mx-auto">
+              <h3 className="mb-2 text-3xl font-extrabold text-left p-4">Chỉ trong hôm nay - Nhanh chân mua sắm ngay</h3>
+      </div>
+      <div className="grid grid-cols-4 grid-rows-2 gap-y-4 w-4/5 mx-auto">
+          
+          <div className="row-start-1"> 
+            <CardProductVertical/>
+          </div>
+          <div className="row-start-1">
+          <CardProductVertical/>
+          </div>
+          <div className="row-start-1">
+          <CardProductVertical/>
+          </div>
+          <div className="row-start-1">
+          <CardProductVertical/>
+          </div>
+  
+
+          <div className= "row-start-2"><CardProductVertical/></div>
+          <div className="row-start-2"><CardProductVertical/></div>
+          <div className="row-start-2"><CardProductVertical/></div>
+          <div className="row-start-2"><CardProductVertical/></div>
+      </div>
+    </div>
+
+    
+    
 
 
-
+  
     </div>
   );
 }
