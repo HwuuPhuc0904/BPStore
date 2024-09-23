@@ -6,7 +6,8 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        'bungee': ['"Bungee Shade"', 'cursive']
+        'bungee': ['"Bungee Shade"', 'cursive'],
+        'aston': ['"Aston"', 'cursive']
       }
     },
   },

@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { Dialog, DialogPanel } from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
-import FlashSaleCardHorizontal from '../../../Components/CardSale/FlashSaleCardHorizontal'
+
 import ImageSlider from '../../../Components/ImageSlider'
 import CardProductVertical from '../../../Components/CardProduct/cardProductVertical'
-import InterfaceProduct from '../../../Components/InterfaceProduct'
+import InterfaceProduct_1 from '../../../Components/InterfaceProduct'
+import CardReview from '../../../Components/InterfaceProduct/cardReview'
+
 
 const navigation = [
   { name: 'Product', href: '#' },
@@ -22,25 +24,19 @@ const categories = [
   {name: 'Sách', src: 'icons/book.png'}
 ]
 
+const face = [
+  {name: 'Wireless Headphones', src: 'https://websitedemos.net/electronic-store-04/wp-content/uploads/sites/1055/2022/03/electronic-store-wireless-headphone.png', bg_color: 'bg-slate-100'},
+  {name: 'Grooming', src: 'https://websitedemos.net/electronic-store-04/wp-content/uploads/sites/1055/2022/03/electronic-store-grooming.png', bg_color: 'bg-slate-400'},
+  {name: 'Video Games', src: 'https://websitedemos.net/electronic-store-04/wp-content/uploads/sites/1055/2022/03/electronic-store-video-games.png', bg_color: 'bg-yellow-200'},
+]
+
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const products = [
-    {
-      id: 1,
-      name: 'Basic Tee',
-      href: '#',
-      imageSrc: 'https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg',
-      imageAlt: "Front of men's Basic Tee in black.",
-      price: '$35',
-      color: 'Black',
-    },
-    // More products...
-  ]
 
 
   return (
     <div className="bg-white ">
-      <header className="absolute inset-x-0 top-0 z-50 bg-black bg-transparent">
+      <header className="absolute inset-x-0 top-0 z-50 bg-transparent">
         <nav aria-label="Global" className="flex items-center justify-between p-6 lg:px-8">
           <div className="flex lg:flex-1">
             <a href="#" className="-m-1.5 p-1.5">
@@ -196,12 +192,12 @@ export default function Home() {
   {/*this is fearture list*/}
 
   <div className="grid grid-cols-6 grid-rows-1 gap-0 mt-4">
-      <div > <InterfaceProduct name = {categories[0].name} src = {categories[0].src}/> </div>
-      <div > <InterfaceProduct name = {categories[1].name} src = {categories[1].src}/> </div>
-      <div ><InterfaceProduct name = {categories[2].name} src = {categories[2].src}/></div>
-      <div ><InterfaceProduct name = {categories[3].name} src = {categories[3].src}/></div>
-      <div ><InterfaceProduct name = {categories[4].name} src = {categories[4].src}/></div>
-      <div ><InterfaceProduct name = {categories[5].name} src = {categories[5].src}/></div>
+      <div > <InterfaceProduct_1 name = {categories[0].name} src = {categories[0].src}/> </div>
+      <div > <InterfaceProduct_1 name = {categories[1].name} src = {categories[1].src}/> </div>
+      <div ><InterfaceProduct_1 name = {categories[2].name} src = {categories[2].src}/></div>
+      <div ><InterfaceProduct_1 name = {categories[3].name} src = {categories[3].src}/></div>
+      <div ><InterfaceProduct_1 name = {categories[4].name} src = {categories[4].src}/></div>
+      <div ><InterfaceProduct_1 name = {categories[5].name} src = {categories[5].src}/></div>
   </div>
     
 
@@ -235,6 +231,15 @@ export default function Home() {
       </div>
     </div>
 
+    {/*this is review product */}
+
+
+    <div className="flex flex-row justify-center items-center gap-4 mt-10">
+        {face.map((item) => (
+          <CardReview name = {item.name} src = {item.src} bg_color = {item.bg_color}/>            
+        ))}
+    </div>
+   
     
     
 
