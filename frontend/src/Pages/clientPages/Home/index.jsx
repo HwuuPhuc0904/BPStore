@@ -8,7 +8,7 @@ import CardProductVertical from '../../../Components/CardProduct/cardProductVert
 import InterfaceProduct from '../../../Components/InterfaceProduct'
 
 const navigation = [
-  { name: 'Product', href: '#' },
+  { name: 'Products', href: '/products' },
   { name: 'Features', href: '#' },
   { name: 'Marketplace', href: '#' },
   { name: 'About me', href: '#' },
@@ -63,9 +63,9 @@ export default function Home() {
           </div>
           <div className="hidden lg:flex lg:gap-x-12">
             {navigation.map((item) => (
-              <a key={item.name} href={item.href} className="text-md font-extrabold leading-6 text-white">
+              <Link key={item.name} to={item.href} className="text-md font-extrabold leading-6 text-white">
                 {item.name}
-              </a>
+              </Link>
             ))}
           </div>
           <div className="hidden lg:flex lg:flex-1 lg:justify-end">
@@ -159,9 +159,9 @@ export default function Home() {
 
             <div>
               <div className="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-primary-100 lg:h-12 lg:w-12 dark:bg-primary-900">
-               <img src = "/icons/freeship.svg" alt = "freeship icons" className= "w-9 h-9 text-primary-600 lg:w-6 lg:h-6"></img>
+               <img src = "/icons/freeship.svg" alt = "freeship icons" className= "w-9 h-9lg:w-6 lg:h-6"></img>
               </div>
-              <h3 className="mb-2 text-2xl font-extrabold ">Freeship</h3>
+              <h3 className="mb-2 text-2xl font-extrabold text-gray-50 ">Freeship</h3>
               <p className="text-gray-500 dark:text-gray-400">Săn mã Freeship Shopee hôm nay - Voucher Freeship Xtra siêu ưu đãi. Tràn ngập mã miễn phí vận chuyển Shopee chính thức trên toàn quốc.</p>
             </div>
 
@@ -169,9 +169,9 @@ export default function Home() {
 
             <div>
               <div className="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-primary-100 lg:h-12 lg:w-12 dark:bg-primary-900">
-                <img src = "/icons/payicons.svg" alt = "freeship icons" className= "w-9 h-9 text-primary-600 lg:w-6 lg:h-6"></img>
+                <img src = "/icons/payicons.svg" alt = "freeship icons" className= "w-9 h-9 lg:w-6 lg:h-6"></img>
               </div>
-              <h3 className="mb-2 text-2xl font-extrabold">Thanh toán tiện dụng</h3>
+              <h3 className="mb-2 text-2xl font-extrabold text-gray-50">Thanh toán tiện dụng</h3>
               <p className="text-gray-500 dark:text-gray-400">Trải nghiệm thanh toán dễ dàng với nhiều phương thức thanh toán khác nhau</p>
             </div>
 
@@ -181,7 +181,7 @@ export default function Home() {
               <div className="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-primary-100 lg:h-12 lg:w-12 dark:bg-primary-900">
                 <img src = "/icons/returnicons.svg" alt = "freeship icons" className= "w-9 h-9 text-primary-600 lg:w-6 lg:h-6"></img>
               </div>
-              <h3 className="mb-2 text-2xl font-extrabold">Đổi trả hàng dễ dàng</h3>
+              <h3 className="mb-2 text-2xl font-extrabold text-gray-50">Đổi trả hàng dễ dàng</h3>
               <p className="text-gray-500 dark:text-gray-400">Dễ dàng đổi trả hàng với người bán, yên tâm sử dụng với đơn hàng của mình</p>
             </div>
 
