@@ -6,6 +6,7 @@ import reportWebVitals from './reportWebVitals';
 import Home from './Pages/clientPages/Home';
 import Login from './Pages/clientPages/Login';
 import SignUp from './Pages/clientPages/SignUp';
+import Products from './Pages/clientPages/Products';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -15,6 +16,7 @@ root.render(
         <Route path='/' element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
+        <Route path="/products" element={<Products />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
