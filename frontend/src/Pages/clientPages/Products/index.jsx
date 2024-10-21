@@ -1,9 +1,10 @@
 import React from "react";
+import Topbar from "../Topbar";
 
 export default function Products() {
   return (
     <div>
-      <h1>Products</h1>
+      <Topbar />
     </div>
   );
 }
