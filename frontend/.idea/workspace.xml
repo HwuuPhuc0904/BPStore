@@ -1,19 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="23bdf983-10b4-483c-a6dd-89a34e8ad90a" name="Changes" comment="" />
+    <list default="true" id="23bdf983-10b4-483c-a6dd-89a34e8ad90a" name="Changes" comment="cauhinhAnt">
+      <change afterPath="$PROJECT_DIR$/src/Components/User/UserAcount.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Components/ProductGrid/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/ProductGrid/index.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Components/Slidebar/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/Slidebar/index.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Pages/clientPages/Topbar/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pages/clientPages/Topbar/index.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.js" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JSX File" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$/.." value="main" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 5
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "BackSoftDEV"
+  }
 }]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/HwuuPhuc0904/BPStore.git",
+    "accountId": "6b06ed6a-841d-4263-aae3-a72633af3bc1"
+  }
+}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 5
+}</component>
   <component name="ProjectId" id="2nxz35fiySUh6MV0yIWDdw5d91g" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -22,17 +59,29 @@
   "keyToString": {
     "Node.js.index.jsx.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "/home/binperdok/MY_PROJECT/BPStore/frontend",
-    "nodejs_interpreter_path": "/home/binperdok/.config/JetBrains/WebStorm2024.2/node/versions/20.18.0/bin/node",
+    "git-widget-placeholder": "bachfe",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "D:/FPT POLYTECHNIC/DUANTEAMPHUC/BPStore/frontend/src/Components/CardProduct",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_interpreter_path": "node",
     "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "settings.nodejs",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\FPT POLYTECHNIC\DUANTEAMPHUC\BPStore\frontend\src\Components\CardProduct" />
+    </key>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-WS-242.23726.96" />
+        <option value="bundled-jdk-9823dce3aa75-28b599e66164-intellij.indexing.shared.core-IU-242.23339.11" />
+        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-IU-242.23339.11" />
       </set>
     </attachedChunks>
   </component>
@@ -45,10 +94,28 @@
       <option name="presentableId" value="Default" />
       <updated>1729929314504</updated>
       <workItem from="1729929315973" duration="80000" />
+      <workItem from="1745289002907" duration="6282000" />
     </task>
+    <task id="LOCAL-00001" summary="cauhinhAnt">
+      <option name="closed" value="true" />
+      <created>1745291360808</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1745291360808</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="cauhinhAnt" />
+    <option name="LAST_COMMIT_MESSAGE" value="cauhinhAnt" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>
