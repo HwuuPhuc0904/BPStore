@@ -16,23 +16,23 @@ export default function Topbar() {
       <div className="px-2 navtop relative max-w-6xl mx-auto flex justify-between place-items-center py-1.5">
         <div className="burger flex items-center">  
           <button onClick={handleOpen}>
-            <svg
-              className="w-7 h-7 text-cusblack"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fillRule="evenodd"
-                d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </button>
-          <h3 className="hidden md:inline text-md mr-2 font-semibold ml-3 text-cusblack">
-            bpstore
-          </h3>
-        </div>
+        {/*    <svg*/}
+        {/*      className="w-7 h-7 text-cusblack"*/}
+        {/*      fill="currentColor"*/}
+        {/*      viewBox="0 0 20 20"*/}
+        {/*      xmlns="http://www.w3.org/2000/svg"*/}
+        {/*    >*/}
+        {/*      <path*/}
+        {/*        fillRule="evenodd"*/}
+        {/*        d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM9 15a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1z"*/}
+        {/*        clipRule="evenodd"*/}
+        {/*      />*/}
+        {/*    </svg>*/}
+        {/*  </button>*/}
+        {/*  <h3 className="hidden md:inline text-md mr-2 font-semibold ml-3 text-cusblack">*/}
+        {/*    bpstore*/}
+        {/*  </h3>*/}
+        {/*</div>*/}
         <div className="profile flex items-center place-items-center">
           <Link href="/">
             <div className="w-8 relative flex items-center h-8 mr-1 rounded-full hover:bg-gray-200 active:bg-gray-300 cursor-pointer duration-200">
