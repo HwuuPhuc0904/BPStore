@@ -8,6 +8,7 @@ import ProductDetail from './Components/CardProduct/Productdetail';
 import Login from './Pages/clientPages/Login';
 import SignUp from './Pages/clientPages/SignUp';
 import Products from './Pages/clientPages/Products';
+import User from './Components/User/UserAcount'
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
