@@ -1,11 +1,16 @@
 import React from "react";
 import { Link } from "react-router-dom";    
 import axios from "axios";
+import { useAuth } from "../../../AuthContext";
+import { useNavigate } from "react-router-dom";
+
 
 export default function Login() {
     const [email, setEmail] = React.useState("");
     const [password, setPassword] = React.useState("");
     const [error, setError] = React.useState("");
+    const {login} = useAuth();
+    const navigate = useNavigate();
 
 
     const handleLogin = async (e) => {
@@ -16,9 +21,14 @@ export default function Login() {
             });
 
             if(response.status === 200){
-                console.log("Login successful")
-                localStorage.setItem("token", response.data.token);
-                window.location.href = "/";
+                console.log("messgae: ", response.data.msg)
+                const token = response.data.token
+                const username = response.data.user.Name
+                const role = response.data.user.role
+                
+                login(token, role, username)
+
+                navigate("/")
             }else {
                 setError("Invalid email or password" )
             }

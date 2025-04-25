@@ -79,7 +79,7 @@ export default function ProductGrid() {
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen overflow-y-auto">
-      <h2 className="font-bold text-2xl mb-6 text-center">Casual Collection</h2>
+      <h2 className="font-bold text-2xl mb-6 text-center">Products Shop</h2>
 
       {/* Filter Bar */}
       <div className="flex flex-wrap justify-start mb-6 gap-4">
@@ -172,7 +172,7 @@ export default function ProductGrid() {
                 <h3 className="font-semibold text-base mb-1 line-clamp-2" title={product.Name}>
                   {product.Name}
                 </h3>
-                <p className="text-gray-700 mb-1">${product.Price.toFixed(2)}</p>
+                <p className="text-gray-700 mb-1 font-bold">${product.Price.toFixed(2)}</p>
                 <p className="text-sm text-gray-600 mb-1">Brand: {product.Brand}</p>
                 <p className="text-sm text-gray-500 mb-1">Stock: {product.Stock}</p>
                 <button className="w-full bg-blue-500 text-white py-1.5 rounded-lg hover:bg-blue-600 transition-colors text-sm">
