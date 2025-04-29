@@ -6,9 +6,9 @@ import LoginPage from './Pages/clientPages/Login/index';
 import RegisterPage from './Pages/clientPages/SignUp/index';
 import Products from './Pages/clientPages/Products/index';
 import FlashSale from './Components/CardSale/FlashSaleCardHorizontal';
-import ProfileForm from './Components/User/ProfileForm'; // Sửa chính tả và đường dẫn
 import OrderTracking from './Components/User/OrderTracking'; // Sửa đường dẫn
 import ProtectedRoute from './ProtectedRoute';
+import UserProfile from './Pages/clientPages/UserInformation/index'
 import './index.css';
 
 function Router() {
@@ -26,13 +26,13 @@ function Router() {
             {/* Route cho người dùng đã đăng nhập */}
             <Route path="/user">
                 <Route path="odertracking" element={
-                    <ProtectedRoute role="USER">
+                    <ProtectedRoute role="user">
                         <OrderTracking />
                     </ProtectedRoute>
                 } />
-                <Route path="account" element={
-                    <ProtectedRoute role="USER">
-                        <ProfileForm />
+                <Route path="information" element={
+                    <ProtectedRoute role="user">
+                        <UserProfile />
                     </ProtectedRoute>
                 } />
             </Route>

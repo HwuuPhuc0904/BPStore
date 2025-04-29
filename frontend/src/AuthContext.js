@@ -1,33 +1,49 @@
-import React, { createContext, useContext, useState } from "react";
-// import {logoutApi} from "";
 
+import React, { createContext, useContext, useState, useEffect } from "react";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem("access_token"));
+    const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem("token"));
     const [userRole, setUserRole] = useState(localStorage.getItem("role"));
+    const [username, setUsername] = useState(localStorage.getItem("username"));
+
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        const role = localStorage.getItem("role");
+        const username = localStorage.getItem("username");
+       
+        if (token) {
+            setIsAuthenticated(true);
+            setUserRole(role);
+            setUsername(username);
+        } else {
+            setIsAuthenticated(false);
+            setUserRole(null)
+            setUsername(null)
+        }
+    }, [])
 
     const login = (token, role,username) => {
-        localStorage.setItem("access_token", token);
+        localStorage.setItem("token", token);
         localStorage.setItem("role", role);
         localStorage.setItem("username", username);
         setIsAuthenticated(true);
         setUserRole(role);
-        console.log("day la username kkkk", username)
+        setUsername(username);
     };
 
     const logout = () => {
-        // logoutApi();
-        localStorage.removeItem("access_token");
+        localStorage.removeItem("token");
         localStorage.removeItem("role");
-        sessionStorage.removeItem("chatHistory")
+        sessionStorage.removeItem("username");
         setIsAuthenticated(false);
         setUserRole(null);
     };
 
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, userRole, login, logout }}>
+        <AuthContext.Provider value={{ isAuthenticated, userRole, username, login, logout }}>
             {children}
         </AuthContext.Provider>
     );
