@@ -24,7 +24,7 @@ export default function Login() {
                 console.log("messgae: ", response.data.msg)
                 const token = response.data.token
                 const username = response.data.user.Name
-                const role = response.data.user.role
+                const role = response.data.user.Role
                 
                 login(token, role, username)
 

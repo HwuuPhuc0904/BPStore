@@ -15,7 +15,7 @@ export default function Topbar() {
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
+    navigate("/");
   };
 
   return (
@@ -113,7 +113,7 @@ export default function Topbar() {
             {/* User account button */}
             {isAuthenticated ? (
               <>
-                <Link to="/user/account">
+                <Link to="/user/information">
                   <div className="w-8 relative flex items-center h-8 rounded-full hover:bg-gray-200 active:bg-gray-300 cursor-pointer duration-200">
                     <svg
                         className="w-6 m-auto h-6 text-cusblack"
