@@ -6,7 +6,7 @@ import LoginPage from './Pages/clientPages/Login/index';
 import RegisterPage from './Pages/clientPages/SignUp/index';
 import Products from './Pages/clientPages/Products/index';
 import FlashSale from './Components/CardSale/FlashSaleCardHorizontal';
-import OrderTracking from './Components/User/OrderTracking'; // Sửa đường dẫn
+import OrderTracking from './Components/OrderTracking/OrderTracking';
 import ProtectedRoute from './ProtectedRoute';
 import UserProfile from './Pages/clientPages/UserInformation/index'
 import './index.css';
