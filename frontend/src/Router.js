@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route,Navigate  } from 'react-router-dom';
 import Home from './Pages/clientPages/Home/index';
 import ProductDetail from './Components/CardProduct/Productdetail';
 import LoginPage from './Pages/clientPages/Login/index';
@@ -10,6 +10,9 @@ import OrderTracking from './Components/OrderTracking/OrderTracking';
 import ProtectedRoute from './ProtectedRoute';
 import UserProfile from './Pages/clientPages/UserInformation/index'
 import './index.css';
+import HomeAdmin from "./Administer/HomeAdmin";
+import ProductList from "./Administer/Product/ProductList";
+import CatalogList from "./Administer/Product/ProductCatalog"
 
 function Router() {
     return (
@@ -22,6 +25,13 @@ function Router() {
             <Route path="/products" element={<Products />} />
             <Route path="/product/:id" element={<ProductDetail />} />
             <Route path="/wed/sales" element={<FlashSale />} />
+
+            <Route path="/admin" element={<HomeAdmin />} >
+                {/*hiển thị trang đầu tiên*/}
+                {/*<Route index element={<Navigate to="products/list" replace />} />*/}
+                <Route path="products/list" element={<ProductList />} />
+                <Route path="products/catalogs" element={<CatalogList />} />
+            </Route>
 
             {/* Route cho người dùng đã đăng nhập */}
             <Route path="/user">
