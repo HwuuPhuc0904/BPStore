@@ -13,6 +13,7 @@ import './index.css';
 import HomeAdmin from "./Administer/HomeAdmin";
 import ProductList from "./Administer/Product/ProductList";
 import CatalogList from "./Administer/Product/ProductCatalog"
+import UserList from "./Administer/User/UserList";
 
 function Router() {
     return (
@@ -31,6 +32,7 @@ function Router() {
                 {/*<Route index element={<Navigate to="products/list" replace />} />*/}
                 <Route path="products/list" element={<ProductList />} />
                 <Route path="products/catalogs" element={<CatalogList />} />
+                <Route path="user/list" element={<UserList />} />
             </Route>
 
             {/* Route cho người dùng đã đăng nhập */}
