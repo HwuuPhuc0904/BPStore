@@ -73,7 +73,7 @@ const HomeAdmin = () => {
                     </SubMenu>
 
                     <SubMenu key="customers" icon={<UserOutlined />} title="Khách hàng">
-                        <Menu.Item key="/admin/customers">Khách hàng</Menu.Item>
+                        <Menu.Item key="/admin/user/list">Khách hàng</Menu.Item>
                         <Menu.Item key="/admin/customers/groups">Nhóm khách hàng</Menu.Item>
                     </SubMenu>
 
