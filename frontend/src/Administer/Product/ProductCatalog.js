@@ -122,6 +122,7 @@ const CatalogList = () => {
                     rowSelection={{}}
                     columns={columns}
                     dataSource={data}
+                    // aaaaaaaa
                     pagination={false}
                     scroll={{ x: true }}
                     style={{ borderTop: '1px solid #f0f0f0' }}
