@@ -2,7 +2,7 @@
 import React from "react";
 import Topbar from "../Topbar";
 import Sidebar from "../../../Components/Slidebar";
-import ProductGrid from "../../../Components/ProductGrid";
+import ProductGrid from "../../../Components/ProductGrid/index";
 import Footer from "../../../Components/Footer";
 
 export default function Products() {
@@ -17,13 +17,14 @@ export default function Products() {
         <div className="w-64 bg-gray-100">
           <Sidebar />
         </div>
-        
+
         {/* Product Grid - Flexible width */}
         <div className="flex-1 p-4">
           <ProductGrid />
         </div>
+
       </div>
-      
+
       {/* Footer - Full width at bottom */}
       <Footer />
     </div>
