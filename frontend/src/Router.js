@@ -1,7 +1,7 @@
 import React from 'react';
 import { Routes, Route,Navigate  } from 'react-router-dom';
 import Home from './Pages/clientPages/Home/index';
-import ProductDetail from './Components/CardProduct/Productdetail';
+import ProductsDetailPage from './Pages/clientPages/ProductsDetail';
 import LoginPage from './Pages/clientPages/Login/index';
 import RegisterPage from './Pages/clientPages/SignUp/index';
 import Products from './Pages/clientPages/Products/index';
@@ -22,9 +22,8 @@ function Router() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<RegisterPage />} />
-
             <Route path="/products" element={<Products />} />
-            <Route path="/product/:id" element={<ProductDetail />} />
+            <Route path="/product/:productId" element={<ProductsDetailPage  />} />
             <Route path="/wed/sales" element={<FlashSale />} />
 
             <Route path="/admin" element={<HomeAdmin />} >
