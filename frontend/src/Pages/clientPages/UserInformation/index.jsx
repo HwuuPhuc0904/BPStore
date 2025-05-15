@@ -1,11 +1,12 @@
 import React from 'react';
 
 import { useState, useEffect } from 'react';
+import config from '../../../config';
 
 
 const UserProfile = () => {
   const [activeView, setActiveView] = useState('information');
-
+  const API_URL = config.apiUrl + "/api/v1/users/profile"
   // Slidebar for change options
   const Sidebar = ({setActiveView}) => {
     return (
@@ -187,31 +188,31 @@ const UserProfile = () => {
           setUserInfo(null); // Clear user info if no token
           return;
         }
-
         try {
-          const response =  await fetch('http://localhost:8080/api/v1/users/profile', {
+          const response = await fetch(API_URL, {
             method: 'GET',
             headers: {
               'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            }
+              'Content-Type': 'application/json',
+              'ngrok-skip-browser-warning': 'true' 
+            },
           })
-  
-          if (!response.ok) {
-            if (response.status === 401 || response.status === 403) {
-              throw new Error('Unauthorized or Forbidden. Please check your login status.');
-            }
-           throw new Error(`Failed to fetch user information (Status: ${response.status})`);
-         }
-
-          const data = await response.json()
-          console.log("API Response data.user:", data.user); 
-
-          if (data && data.user) {
-            setUserInfo(data.user); 
-          } else {
-            throw new Error("User data not found in API response structure.");
+    
+            if (!response.ok) {
+              if (response.status === 401 || response.status === 403) {
+                throw new Error('Unauthorized or Forbidden. Please check your login status.');
+              }
+            throw new Error(`Failed to fetch user information (Status: ${response.status})`);
           }
+
+            const data = await response.json()
+            console.log("API Response data.user:", data.user); 
+
+            if (data && data.user) {
+              setUserInfo(data.user); 
+            } else {
+              throw new Error("User data not found in API response structure.");
+            }
 
         }
         catch(e){
@@ -224,7 +225,7 @@ const UserProfile = () => {
         }
       }
       fetchUserInformation()
-    }, [])
+    }, []);
 
     if (loading) {
       return (
@@ -267,19 +268,19 @@ const UserProfile = () => {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-500 mb-1">Gender</label>
-            <p className="text-gray-900 text-base">{userInfo.gender || 'Not Provided'}</p>
+            <p className="text-gray-900 text-base">{userInfo.Gender || 'Not Provided'}</p>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-500 mb-1">Birthday</label>
-             <p className="text-gray-900 text-base"></p>
+             <p className="text-gray-900 text-base">{userInfo.Birthday || 'Not Provided'}</p>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-500 mb-1">Language</label>
-            <p className="text-gray-900 text-base">{userInfo.language || 'Not Set'}</p>
+            <p className="text-gray-900 text-base">{userInfo.Language || 'Not Set'}</p>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-500 mb-1">Country</label>
-            <p className="text-gray-900 text-base">{userInfo.country || 'Not Set'}</p>
+            <p className="text-gray-900 text-base">{userInfo.Country || 'Not Set'}</p>
           </div>
 
           {/* Settings Section - Display based on userInfo */}

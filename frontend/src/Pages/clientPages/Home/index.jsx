@@ -70,9 +70,14 @@ export default function Home() {
                         ))}
                     </div>
                     <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-                        <Link to="login" className="text-md font-extrabold leading-6 text-white">
+                        <Link to="signup" className="text-md font-extrabold leading-6 text-white">
+                            Signup <span aria-hidden="true"></span>
+                        </Link>
+
+                        <Link to="login" className=" ml-6 text-md font-extrabold leading-6 text-white">
                             Log in <span aria-hidden="true">&rarr;</span>
                         </Link>
+                        
                     </div>
                 </nav>
                 <Dialog open={mobileMenuOpen} onClose={setMobileMenuOpen} className="lg:hidden">

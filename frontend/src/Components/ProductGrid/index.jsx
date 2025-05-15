@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-
+import config from "../../config";
 const PRODUCTS_PER_PAGE = 20;
-const API_URL = "http://localhost:8080/api/v1/products";
+
+const API_URL = config.apiUrl + "/api/v1/products"
 
 export default function ProductGrid() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -17,7 +18,15 @@ export default function ProductGrid() {
       setLoading(true);
       try {
         // Add pagination parameters to the API call
-        const response = await fetch(`${API_URL}?page=${currentPage}&limit=${PRODUCTS_PER_PAGE}`);
+        const apiUrlWithParams = `${API_URL}?page=${currentPage}&limit=${PRODUCTS_PER_PAGE}`;
+
+        const response = await fetch(apiUrlWithParams, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true' 
+          }
+        });
         
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -164,7 +173,7 @@ export default function ProductGrid() {
               className="bg-white border rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
             >
               <img
-                src={getFirstImage(product.ImagesURL)}
+                src={getFirstImage(product.MainImage)}
                 alt={product.Name}
                 className="w-full h-40 object-cover rounded-t-lg"
               />

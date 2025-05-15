@@ -21,7 +21,7 @@ function Router() {
             {/* Route công khai */}
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/signup" element={<RegisterPage />} />
 
             <Route path="/products" element={<Products />} />
             <Route path="/product/:id" element={<ProductDetail />} />
