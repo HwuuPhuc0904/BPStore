@@ -5,9 +5,7 @@ import config from "../../config";
 const PRODUCTS_PER_PAGE = 20;
 const API_URL = config.apiUrl + "/api/v1/products";
 
-/**
- * Compact, accessible pagination component with ellipsis and smooth‑scroll.
- */
+
 function Pagination({ currentPage, totalPages, onPageChange }) {
   // Build a smart page list: 1 … (n-2)(n-1)n … last
   const getPageList = () => {
@@ -204,7 +202,7 @@ export default function ProductGrid() {
         return priceOrder === "asc" ? a.Price - b.Price : b.Price - a.Price;
       });
     }
-
+    
     return sortedProducts;
   };
 
@@ -298,7 +296,7 @@ export default function ProductGrid() {
                     <img
                         src={getFirstImage(product.MainImage)}
                         alt={product.Name}
-                        className="w-full h-[250px] object-cover rounded-t-lg"
+                        className="w-full h-[200px] object-cover rounded-t-lg"
                     />
                     <div className="p-4 flex flex-col flex-grow">
                       <div className="flex flex-col" style={{ minHeight: "180px" }}>
