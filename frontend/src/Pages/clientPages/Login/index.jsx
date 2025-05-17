@@ -1,6 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";    
-import axios from "axios";
+import { Link } from "react-router-dom";
 import { useAuth } from "../../../AuthContext";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -10,33 +9,32 @@ export default function Login() {
     const [email, setEmail] = React.useState("");
     const [password, setPassword] = React.useState("");
     const [error, setError] = React.useState("");
-    const {login} = useAuth();
+    const { login } = useAuth();
     const navigate = useNavigate();
 
-    const API_URL = config.apiUrl + "/api/v1/auth/login"
-
+    const API_URL = config.apiUrl + "/api/v1/auth/login";
 
     const handleLogin = async (e) => {
-        try{
+        e.preventDefault();
+        try {
             const response = await fetch(API_URL, {
-                method: 'GET',
+                method: 'POST',
                 headers: {
-                  'Content-Type': 'application/json',
-                  'ngrok-skip-browser-warning': 'true' 
+                    'Content-Type': 'application/json',
+                    'ngrok-skip-browser-warning': 'true'
                 },
-                body: JSON.stringify({email, password})
-              });
-
-            if(response.status === 200){
-                console.log("messgae: ", response.data.msg)
-                const token = response.data.token
-                const username = response.data.user.Name
-                const role = response.data.user.Role
-                
-                login(token, role, username)
-                navigate("/")
-            }else {
-                setError("Invalid email or password" )
+                body: JSON.stringify({ email, password })
+            });
+            const data = await response.json();
+            if (response.ok) {
+                console.log("message: ", data.msg);
+                const token = data.token;
+                const username = data.user.Name;
+                const role = data.user.Role;
+                login(token, role, username);
+                navigate("/");
+            } else {
+                setError(data.message || "Invalid email or password");
             }
         } catch (error) {
             setError("Login failed: " + error.message);
@@ -46,13 +44,13 @@ export default function Login() {
     return (
         <div className="flex w-full h-screen bg-gradient-to-br from-violet-50 to-pink-50">
             <div className="w-full flex items-center justify-center ">
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                     className='w-11/12 max-w-[700px] px-10 py-20 rounded-3xl bg-white/80 backdrop-blur-lg shadow-2xl border border-gray-100'
                 >
-                    <motion.h1 
+                    <motion.h1
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.2 }}
@@ -60,7 +58,16 @@ export default function Login() {
                     >
                         Welcome Back
                     </motion.h1>
-                    <motion.p 
+                    {error && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="text-red-500 text-sm mt-2"
+                        >
+                            {error}
+                        </motion.div>
+                    )}
+                    <motion.p
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.3 }}
@@ -69,28 +76,28 @@ export default function Login() {
                         Welcome back! Please enter your details.
                     </motion.p>
                     <div className='mt-8 space-y-6'>
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.4 }}
                             className='flex flex-col'
                         >
                             <label className='text-lg font-medium text-gray-700'>Email</label>
-                            <input 
+                            <input
                                 className='w-full border-2 border-gray-100 rounded-xl p-4 mt-1 bg-transparent focus:border-violet-500 focus:ring-2 focus:ring-violet-200 transition-all duration-300'
                                 placeholder="Enter your email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                             />
                         </motion.div>
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.5 }}
                             className='flex flex-col'
                         >
                             <label className='text-lg font-medium text-gray-700'>Password</label>
-                            <input 
+                            <input
                                 className='w-full border-2 border-gray-100 rounded-xl p-4 mt-1 bg-transparent focus:border-violet-500 focus:ring-2 focus:ring-violet-200 transition-all duration-300'
                                 placeholder="Enter your password"
                                 type="password"
@@ -98,7 +105,7 @@ export default function Login() {
                                 onChange={(e) => setPassword(e.target.value)}
                             />
                         </motion.div>
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.6 }}
@@ -110,19 +117,19 @@ export default function Login() {
                             </div>
                             <button className='font-medium text-base text-violet-600 hover:text-violet-700 transition-colors'>Forgot password</button>
                         </motion.div>
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.7 }}
                             className='space-y-4'
                         >
-                            <button 
+                            <button
                                 className='w-full active:scale-[.98] active:duration-75 transition-all hover:scale-[1.01] ease-in-out transform py-4 bg-gradient-to-r from-violet-600 to-pink-600 rounded-xl text-white font-bold text-lg shadow-lg hover:shadow-xl'
                                 onClick={handleLogin}
                             >
                                 Sign in
                             </button>
-                            <button 
+                            <button
                                 className='w-full flex items-center justify-center gap-2 active:scale-[.98] active:duration-75 transition-all hover:scale-[1.01] ease-in-out transform py-4 rounded-xl text-gray-700 font-semibold text-lg border-2 border-gray-100 hover:border-gray-200 hover:bg-gray-50'
                             >
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -134,15 +141,15 @@ export default function Login() {
                                 Sign in with Google
                             </button>
                         </motion.div>
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.8 }}
                             className='flex justify-center items-center'
                         >
                             <p className='font-medium text-base text-gray-600'>Don't have an account?</p>
-                            <Link 
-                                to='/signup' 
+                            <Link
+                                to='/signup'
                                 className='ml-2 font-medium text-base text-violet-600 hover:text-violet-700 transition-colors'
                             >
                                 Sign up

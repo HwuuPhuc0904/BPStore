@@ -1,19 +1,18 @@
-import { useState } from 'react'
-import {Link} from 'react-router-dom'
-import { Dialog, DialogPanel } from '@headlessui/react'
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
-import FlashSaleCardHorizontal from '../../../Components/CardSale/FlashSaleCardHorizontal'
-import ImageSlider from '../../../Components/ImageSlider'
-import CardProductVertical from '../../../Components/CardProduct/cardProductVertical'
-import InterfaceProduct from '../../../Components/InterfaceProduct'
-
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { Dialog, DialogPanel } from '@headlessui/react';
+import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import FlashSaleCardHorizontal from '../../../Components/CardSale/FlashSaleCardHorizontal';
+import ImageSlider from '../../../Components/ImageSlider';
+import InterfaceProduct from '../../../Components/InterfaceProduct';
+import config from '../../../config';
 
 const navigation = [
     { name: 'Products', href: '/products' },
     { name: 'Features', href: '#' },
     { name: 'Marketplace', href: '#' },
     { name: 'About me', href: '#' },
-]
+];
 
 const categories = [
     { name: 'Đồ điện tử', src: 'icons/electronics.png' },
@@ -21,27 +20,101 @@ const categories = [
     { name: 'Nhà bếp', src: 'icons/kitchen.png' },
     { name: 'Quần áo', src: 'icons/clother.png' },
     { name: 'Mỹ Phẩm', src: 'icons/cosmetics.png' },
-    {name: 'Sách', src: 'icons/book.png'}
-]
+    { name: 'Sách', src: 'icons/book.png' },
+];
 
-export default function Home() {
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-    const products = [
-        {
-            id: 1,
-            name: 'Basic Tee',
-            href: '#',
-            imageSrc: 'https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg',
-            imageAlt: "Front of men's Basic Tee in black.",
-            price: '$35',
-            color: 'Black',
-        },
-        // More products...
-    ]
+const FlashSaleCard = ({ product }) => {
+    const getFirstImage = (imagesUrlString) => {
+        if (!imagesUrlString) return '';
+        const urls = imagesUrlString.split('|');
+        return urls[0] || '';
+    };
 
+    const formatPriceVND = (price) => {
+        return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + 'đ';
+    };
 
     return (
-        <div className="bg-white ">
+        <Link to={`/product/${product.ID}`} className="bg-white border rounded-lg shadow-md hover:shadow-lg transition-shadow flex flex-col h-[500px] w-full">
+            <img
+                src={getFirstImage(product.MainImage)}
+                alt={product.Name}
+                className="w-full h-[200px] object-cover rounded-t-lg"
+            />
+            <div className="p-4 flex flex-col flex-grow">
+                <div className="flex flex-col" style={{ minHeight: '180px' }}>
+                    <h3 className="font-semibold text-base mb-1 line-clamp-2" title={product.Name}>
+                        {product.Name}
+                    </h3>
+                    <div className="mb-1">
+                        <p className="text-gray-500 line-through text-sm">
+                            {formatPriceVND(product.OriginalPrice)}
+                        </p>
+                        <p className="text-gray-700 font-bold">{formatPriceVND(product.Price)}</p>
+                        {product.DiscountPercent > 0 && (
+                            <span className="text-red-500 text-sm">(-{product.DiscountPercent}%)</span>
+                        )}
+                    </div>
+                    <div className="flex items-center mb-1">
+                        <div className="flex">
+                            {Array.from({ length: 5 }, (_, i) => (
+                                <span key={i} className={i < Math.round(product.RatingAverage) ? 'text-yellow-500' : 'text-gray-300'}>
+                                    ★
+                                </span>
+                            ))}
+                        </div>
+                        <span className="text-sm text-gray-500 ml-2">({product.ReviewCount})</span>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-1">Brand: {product.Brand}</p>
+                    <p className="text-sm text-gray-500 mb-1">Stock: {product.Stock}</p>
+                </div>
+                <button className="w-full bg-blue-500 text-white py-1.5 rounded-lg hover:bg-blue-600 transition-colors text-sm mt-auto">
+                    Xem chi tiết
+                </button>
+            </div>
+        </Link>
+    );
+};
+
+export default function Home() {
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            setLoading(true);
+            try {
+                const response = await fetch(`${config.apiUrl}/api/v1/products?page=1&limit=5`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'ngrok-skip-browser-warning': 'true',
+                    },
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const data = await response.json();
+                const productList = data.data || [];
+                if (productList.length === 0) {
+                    throw new Error('Không tìm thấy sản phẩm');
+                }
+                setProducts(productList);
+            } catch (err) {
+                console.error('Error fetching products:', err);
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProducts();
+    }, []);
+
+    return (
+        <div className="bg-white">
             <header className="absolute inset-x-0 top-0 z-50 bg-black bg-transparent">
                 <nav aria-label="Global" className="flex items-center justify-between p-6 lg:px-8">
                     <div className="flex lg:flex-1">
@@ -73,11 +146,9 @@ export default function Home() {
                         <Link to="signup" className="text-md font-extrabold leading-6 text-white">
                             Signup <span aria-hidden="true"></span>
                         </Link>
-
-                        <Link to="login" className=" ml-6 text-md font-extrabold leading-6 text-white">
-                            Log in <span aria-hidden="true">&rarr;</span>
+                        <Link to="login" className="ml-6 text-md font-extrabold leading-6 text-white">
+                            Log in <span aria-hidden="true">→</span>
                         </Link>
-                        
                     </div>
                 </nav>
                 <Dialog open={mobileMenuOpen} onClose={setMobileMenuOpen} className="lg:hidden">
@@ -89,7 +160,7 @@ export default function Home() {
                                 onClick={() => setMobileMenuOpen(false)}
                                 className="-m-2.5 rounded-md p-2.5 text-gray-700"
                             >
-                                <XMarkIcon className="h-6 w-6"/>
+                                <XMarkIcon className="h-6 w-6" />
                             </button>
                         </div>
                         <div className="mt-6 flow-root">
@@ -147,7 +218,7 @@ export default function Home() {
                             >
                                 Get started
                             </a>
-                            <a href="#" className="text-sm font-semibold leading-6 text-white ">
+                            <a href="#" className="text-sm font-semibold leading-6 text-white">
                                 Learn more <span aria-hidden="true">→</span>
                             </a>
                         </div>
@@ -155,82 +226,80 @@ export default function Home() {
                 </div>
             </div>
 
-
-            {/** this is feature page */}
-
             <section className="bg-white dark:bg-gray-900">
                 <div className="py-8 px-4 mx-auto max-w-screen-xl sm:py-16 lg:px-6">
-
                     <div className="space-y-8 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-12 md:space-y-0">
-
                         <div>
                             <div className="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-primary-100 lg:h-12 lg:w-12 dark:bg-primary-900">
-                                <img src = "/icons/freeship.svg" alt = "freeship icons" className= "w-9 h-9lg:w-6 lg:h-6"></img>
+                                <img src="/icons/freeship.svg" alt="freeship icons" className="w-9 h-9 lg:w-6 lg:h-6" />
                             </div>
-                            <h3 className="mb-2 text-2xl font-extrabold text-gray-50 ">Freeship</h3>
-                            <p className="text-gray-500 dark:text-gray-400">Săn mã Freeship Shopee hôm nay - Voucher Freeship Xtra siêu ưu đãi. Tràn ngập mã miễn phí vận chuyển Shopee chính thức trên toàn quốc.</p>
+                            <h3 className="mb-2 text-2xl font-extrabold text-gray-50">Freeship</h3>
+                            <p className="text-gray-500 dark:text-gray-400">
+                                Săn mã Freeship Shopee hôm nay - Voucher Freeship Xtra siêu ưu đãi. Tràn ngập mã miễn phí vận chuyển Shopee chính thức trên toàn quốc.
+                            </p>
                         </div>
-
-                        {/** --------- */}
-
                         <div>
                             <div className="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-primary-100 lg:h-12 lg:w-12 dark:bg-primary-900">
-                                <img src = "/icons/payicons.svg" alt = "freeship icons" className= "w-9 h-9 lg:w-6 lg:h-6"></img>
+                                <img src="/icons/payicons.svg" alt="freeship icons" className="w-9 h-9 lg:w-6 lg:h-6" />
                             </div>
                             <h3 className="mb-2 text-2xl font-extrabold text-gray-50">Thanh toán tiện dụng</h3>
-                            <p className="text-gray-500 dark:text-gray-400">Trải nghiệm thanh toán dễ dàng với nhiều phương thức thanh toán khác nhau</p>
+                            <p className="text-gray-500 dark:text-gray-400">
+                                Trải nghiệm thanh toán dễ dàng với nhiều phương thức thanh toán khác nhau
+                            </p>
                         </div>
-
-                        {/** --------- */}
-
                         <div>
                             <div className="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-primary-100 lg:h-12 lg:w-12 dark:bg-primary-900">
-                                <img src = "/icons/returnicons.svg" alt = "freeship icons" className= "w-9 h-9 text-primary-600 lg:w-6 lg:h-6"></img>
+                                <img src="/icons/returnicons.svg" alt="freeship icons" className="w-9 h-9 lg:w-6 lg:h-6" />
                             </div>
                             <h3 className="mb-2 text-2xl font-extrabold text-gray-50">Đổi trả hàng dễ dàng</h3>
-                            <p className="text-gray-500 dark:text-gray-400">Dễ dàng đổi trả hàng với người bán, yên tâm sử dụng với đơn hàng của mình</p>
+                            <p className="text-gray-500 dark:text-gray-400">
+                                Dễ dàng đổi trả hàng với người bán, yên tâm sử dụng với đơn hàng của mình
+                            </p>
                         </div>
-
                     </div>
                 </div>
             </section>
 
-
-
-            {/*this is flash sale list */}
-            <ImageSlider/>
-
-            {/*this is fearture list*/}
+            <ImageSlider />
 
             <div className="grid grid-cols-6 grid-rows-1 gap-0 mt-4">
-                <div > <InterfaceProduct name = {categories[0].name} src = {categories[0].src}/> </div>
-                <div > <InterfaceProduct name = {categories[1].name} src = {categories[1].src}/> </div>
-                <div ><InterfaceProduct name = {categories[2].name} src = {categories[2].src}/></div>
-                <div ><InterfaceProduct name = {categories[3].name} src = {categories[3].src}/></div>
-                <div ><InterfaceProduct name = {categories[4].name} src = {categories[4].src}/></div>
-                <div ><InterfaceProduct name = {categories[5].name} src = {categories[5].src}/></div>
-            </div>
-
-
-
-            {/*this is flash sale grid*/}
-
-            <div className = "bg-white mt-5">
-                <div className=" w-4/5 mx-auto">
-                    <h3 className="mb-2 text-3xl font-extrabold text-left p-4">Chỉ trong hôm nay - Nhanh chân mua sắm ngay</h3>
+                <div><InterfaceProduct name={categories[0].name} src={categories[0].src} /></div>
+                <div>
+                    <Link to="/products">
+                        <InterfaceProduct name={categories[1].name} src={categories[1].src} />
+                    </Link>
                 </div>
-                {products.map((p) => (
-                    <CardProductVertical key={p.id} product={p}/>
-                ))}
+                <div><InterfaceProduct name={categories[2].name} src={categories[2].src} /></div>
+                <div><InterfaceProduct name={categories[3].name} src={categories[3].src} /></div>
+                <div><InterfaceProduct name={categories[4].name} src={categories[4].src} /></div>
+                <div><InterfaceProduct name={categories[5].name} src={categories[5].src} /></div>
             </div>
 
+            <div className="bg-white mt-5">
+                <div className="w-4/5 mx-auto">
+                    <h3 className="mb-2 text-3xl font-extrabold text-left p-4">
+                        Chỉ trong hôm nay - Nhanh chân mua sắm ngay
+                    </h3>
+                </div>
+                {loading && <p className="text-center">Đang tải sản phẩm...</p>}
+                {error && <p className="text-center text-red-500">{error}</p>}
+                {!loading && !error && products.length === 0 && (
+                    <p className="text-center">Không tìm thấy sản phẩm giảm giá.</p>
+                )}
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 w-4/5 mx-auto">
+                    {products.map((product) => (
+                        <FlashSaleCard key={product.ID} product={product} />
+                    ))}
+                </div>
+            </div>
 
-            {/*this is footer */}
             <div className="w-full max-w-screen-xl mx-auto p-4 md:py-8">
                 <div className="sm:flex sm:items-center sm:justify-between">
                     <a href="https://flowbite.com/" className="flex items-center mb-4 sm:mb-0 space-x-3 rtl:space-x-reverse">
                         <img src="https://flowbite.com/docs/images/logo.svg" className="h-8" alt="Flowbite Logo" />
-                        <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Flowbite</span>
+                        <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
+                            Flowbite
+                        </span>
                     </a>
                     <ul className="flex flex-wrap items-center mb-6 text-sm font-medium text-gray-500 sm:mb-0 dark:text-gray-400">
                         <li>
@@ -249,8 +318,8 @@ export default function Home() {
                 </div>
                 <hr className="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8" />
                 <span className="block text-sm text-gray-500 sm:text-center dark:text-gray-400">
-              © 2023 <a href="https://flowbite.com/" className="hover:underline">Flowbite™</a>. All Rights Reserved.
-          </span>
+                    © 2023 <a href="https://flowbite.com/" className="hover:underline">Flowbite™</a>. All Rights Reserved.
+                </span>
             </div>
         </div>
     );
