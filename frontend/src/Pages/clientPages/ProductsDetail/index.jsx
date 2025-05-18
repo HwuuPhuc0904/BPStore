@@ -8,7 +8,7 @@ export default function ProductsDetailPage() {
         <div className="flex flex-col min-h-screen">
             <Topbar />
 
-            {/* đệm 64 px vì Topbar fixed h-16 */}
+
             <div className="flex flex-1 mt-16">
                 <div className="flex-1 p-4">
                     <ProductDetailComponent />

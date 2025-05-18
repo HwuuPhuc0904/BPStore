@@ -1,7 +1,7 @@
 
 import React from "react";
 import Topbar from "../Topbar";
-import Sidebar from "../../../Components/Slidebar";
+import ProductFilter from "../../../Components/Slidebar/ProductFilter";
 import ProductGrid from "../../../Components/ProductGrid/index";
 import Footer from "../../../Components/Footer";
 
@@ -15,7 +15,7 @@ export default function Products() {
       <div className="flex flex-1 mt-16">
         {/* Sidebar Filters - Fixed width, full height */}
         <div className="w-64 bg-gray-100">
-          <Sidebar />
+          <ProductFilter />
         </div>
 
         {/* Product Grid - Flexible width */}

@@ -37,7 +37,7 @@ export default function Topbar() {
               </svg>
             </button>
             <h3 className="text-md mr-2 font-semibold ml-3 text-cusblack">
-              bpstore
+              BPSTORE
             </h3>
           </div>
           

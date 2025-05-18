@@ -12,6 +12,7 @@ function ProductDetail() {
     const [quantity, setQuantity] = useState(1);
     const [subtotal, setSubtotal] = useState(0);
     const [showFullDescription, setShowFullDescription] = useState(false);
+    const [similarProducts, setSimilarProducts] = useState([]); // State cho sản phẩm tương tự
 
     const stripHtmlTags = (str) => {
         if (!str) return str;
@@ -38,6 +39,63 @@ function ProductDetail() {
                 const firstImage = data.product.ImagesURL.split('|')[0];
                 setMainImage(firstImage || 'https://via.placeholder.com/400');
                 setSubtotal(data.product.Price || 0);
+                // Dữ liệu mẫu tĩnh cho sản phẩm tương tự (sẽ được thay bằng API sau)
+                setSimilarProducts([
+                    {
+                        Name: "Điện Thoai Samsung Galaxy A06 (4GB/128GB)",
+                        Price: 2250000,
+                        RatingAverage: 4.8,
+                        ReviewCount: 15,
+                        ImagesURL: "https://via.placeholder.com/150",
+                        SpecificationsFull: JSON.stringify({
+                            Content: {
+                                storage: { name: "ROM", value: "128GB" },
+                                ram: { name: "RAM", value: "4GB" },
+                                gpu: { name: "GPU", value: "Mali-G52" },
+                                chipset: { name: "Chipset", value: "MediaTek Helio G85" },
+                                display_technology: { name: "Công nghệ màn hình", value: "PLS LCD" },
+                                cpu_speed: { name: "Tốc độ CPU", value: "2 nhân 2.0 GHz & 6 nhân 1.8 GHz" },
+                            },
+                        }),
+                        Seller: "Tiki Trading",
+                    },
+                    {
+                        Name: "Điện Thoai Samsung A36 5G (8GB/128GB)",
+                        Price: 6937000,
+                        RatingAverage: 5.0,
+                        ReviewCount: 1,
+                        ImagesURL: "https://via.placeholder.com/150",
+                        SpecificationsFull: JSON.stringify({
+                            Content: {
+                                storage: { name: "ROM", value: "128GB" },
+                                ram: { name: "RAM", value: "8GB" },
+                                gpu: { name: "GPU", value: "Adreno 710" },
+                                chipset: { name: "Chipset", value: "Snapdragon 6 Gen 3 8 nhán" },
+                                display_technology: { name: "Công nghệ màn hình", value: "Super AMOLED" },
+                                cpu_speed: { name: "Tốc độ CPU", value: "2.4 GHz" },
+                            },
+                        }),
+                        Seller: "Hồng Hạnh Mobile",
+                    },
+                    {
+                        Name: "Điện Thoai Samsung Galaxy A03",
+                        Price: 6050000,
+                        RatingAverage: 5.0,
+                        ReviewCount: 1,
+                        ImagesURL: "https://via.placeholder.com/150",
+                        SpecificationsFull: JSON.stringify({
+                            Content: {
+                                storage: { name: "ROM", value: "128GB" },
+                                ram: { name: "RAM", value: "8GB" },
+                                gpu: { name: "GPU", value: "Mali-G68" },
+                                chipset: { name: "Chipset", value: "Exynos 1380 (5nm)" },
+                                display_technology: { name: "Công nghệ màn hình", value: "Super AMOLED" },
+                                cpu_speed: { name: "Tốc độ CPU", value: "2.4GHz, 2GHz, ..." },
+                            },
+                        }),
+                        Seller: "Tiki Trading",
+                    },
+                ]);
             } catch (error) {
                 console.error('Error fetching product:', error);
                 setError(error.message);
@@ -101,13 +159,17 @@ function ProductDetail() {
                     <p className="text-gray-500 mt-1">Thương hiệu: {product.Brand}</p>
                     <div className="mt-4 flex items-center">
                         <span className="text-xl font-bold text-red-500 mr-2">
-                            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.Price)}
-                        </span>
-                        <span className="text-gray-500 line-through text-sm">
-                            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.OriginalPrice)}
-                        </span>
-                        {product.DiscountPercent > 0 && (
-                            <span className="text-red-500 text-sm ml-2">(-{product.DiscountPercent}%)</span>
+            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.Price)}
+        </span>
+                        {product.Price !== product.OriginalPrice && (
+                            <>
+                <span className="text-gray-500 line-through text-sm">
+                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.OriginalPrice)}
+                </span>
+                                {product.DiscountPercent > 0 && (
+                                    <span className="text-red-500 text-sm ml-2">(-{product.DiscountPercent}%)</span>
+                                )}
+                            </>
                         )}
                     </div>
                     <div className="mt-2 flex items-center">
@@ -223,6 +285,106 @@ function ProductDetail() {
                         </div>
                     )}
                 </div>
+            </div>
+
+            {/* Similar Products Comparison Section */}
+            <div className="mt-6 bg-white p-6 rounded shadow">
+                <h2 className="text-xl font-bold mb-4">So sánh sản phẩm tương tự</h2>
+                {similarProducts.length > 0 ? (
+                    <div className="overflow-x-auto">
+                        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                            {/* Cột sản phẩm hiện tại */}
+                            <div className="border p-4 rounded min-w-[200px]">
+                                <p className="font-semibold text-center">{product.Name}</p>
+                                <Image
+                                    src={mainImage}
+                                    alt={product.Name}
+                                    width="100%"
+                                    height={150}
+                                    style={{ objectFit: 'contain' }}
+                                    className="mt-2"
+                                />
+                                <Button type="primary" className="w-full mt-2">
+                                    Thêm vào giỏ
+                                </Button>
+                                <p className="text-red-500 font-bold mt-2 text-center">
+                                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.Price)}
+                                </p>
+                                <p className="text-center mt-1">
+                                    {product.RatingAverage} ★ ({product.ReviewCount})
+                                </p>
+                                <p className="text-center mt-1">Nhà bán: {product.Seller || 'N/A'}</p>
+                                <p className="text-center mt-1">
+                                    ROM: {JSON.parse(product.SpecificationsFull).Content.storage?.value || 'N/A'}
+                                </p>
+                                <p className="text-center mt-1">
+                                    RAM: {JSON.parse(product.SpecificationsFull).Content.ram?.value || 'N/A'}
+                                </p>
+                                <p className="text-center mt-1">
+                                    GPU: {JSON.parse(product.SpecificationsFull).Content.gpu?.value || 'N/A'}
+                                </p>
+                                <p className="text-center mt-1">
+                                    Chipset: {JSON.parse(product.SpecificationsFull).Content.chipset?.value || 'N/A'}
+                                </p>
+                                <p className="text-center mt-1">
+                                    Màn hình: {JSON.parse(product.SpecificationsFull).Content.display_technology?.value || 'N/A'}
+                                </p>
+                                <p className="text-center mt-1">
+                                    Tốc độ CPU: {JSON.parse(product.SpecificationsFull).Content.cpu_speed?.value || 'N/A'}
+                                </p>
+                            </div>
+
+                            {/* Các cột sản phẩm tương tự */}
+                            {similarProducts.map((similarProduct, idx) => {
+                                const specs = JSON.parse(similarProduct.SpecificationsFull);
+                                const firstImage = similarProduct.ImagesURL;
+                                return (
+                                    <div key={idx} className="border p-4 rounded min-w-[200px]">
+                                        <p className="font-semibold text-center">{similarProduct.Name}</p>
+                                        <Image
+                                            src={firstImage}
+                                            alt={similarProduct.Name}
+                                            width="100%"
+                                            height={150}
+                                            style={{ objectFit: 'contain' }}
+                                            className="mt-2"
+                                        />
+                                        <Button type="primary" className="w-full mt-2">
+                                            Thêm vào giỏ
+                                        </Button>
+                                        <p className="text-red-500 font-bold mt-2 text-center">
+                                            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(similarProduct.Price)}
+                                        </p>
+                                        <p className="text-center mt-1">
+                                            {similarProduct.RatingAverage} ★ ({similarProduct.ReviewCount})
+                                        </p>
+                                        <p className="text-center mt-1">Nhà bán: {similarProduct.Seller || 'N/A'}</p>
+                                        <p className="text-center mt-1">
+                                            ROM: {specs.Content.storage?.value || 'N/A'}
+                                        </p>
+                                        <p className="text-center mt-1">
+                                            RAM: {specs.Content.ram?.value || 'N/A'}
+                                        </p>
+                                        <p className="text-center mt-1">
+                                            GPU: {specs.Content.gpu?.value || 'N/A'}
+                                        </p>
+                                        <p className="text-center mt-1">
+                                            Chipset: {specs.Content.chipset?.value || 'N/A'}
+                                        </p>
+                                        <p className="text-center mt-1">
+                                            Màn hình: {specs.Content.display_technology?.value || 'N/A'}
+                                        </p>
+                                        <p className="text-center mt-1">
+                                            Tốc độ CPU: {specs.Content.cpu_speed?.value || 'N/A'}
+                                        </p>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                ) : (
+                    <p>Không có sản phẩm tương tự để so sánh.</p>
+                )}
             </div>
         </div>
     );

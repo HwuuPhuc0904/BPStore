@@ -1,80 +1,196 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Dialog, DialogPanel } from '@headlessui/react';
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
-import FlashSaleCardHorizontal from '../../../Components/CardSale/FlashSaleCardHorizontal';
-import ImageSlider from '../../../Components/ImageSlider';
-import InterfaceProduct from '../../../Components/InterfaceProduct';
-import config from '../../../config';
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { Dialog, DialogPanel } from "@headlessui/react";
+import {
+    Bars3Icon,
+    XMarkIcon,
+    ChevronRightIcon,
+} from "@heroicons/react/24/outline";
+import ImageSlider from "../../../Components/ImageSlider";
+import InterfaceProduct from "../../../Components/InterfaceProduct";
+import config from "../../../config";
 
 const navigation = [
-    { name: 'Products', href: '/products' },
-    { name: 'Features', href: '#' },
-    { name: 'Marketplace', href: '#' },
-    { name: 'About me', href: '#' },
+    { name: "Products", href: "/products" },
+    { name: "Features", href: "#" },
+    { name: "Marketplace", href: "#" },
+    { name: "About me", href: "#" },
 ];
 
 const categories = [
-    { name: 'Đồ điện tử', src: 'icons/electronics.png' },
-    { name: 'Điện thoại', src: 'icons/smartphone.png' },
-    { name: 'Nhà bếp', src: 'icons/kitchen.png' },
-    { name: 'Quần áo', src: 'icons/clother.png' },
-    { name: 'Mỹ Phẩm', src: 'icons/cosmetics.png' },
-    { name: 'Sách', src: 'icons/book.png' },
+    { name: "Đồ điện tử", src: "icons/electronics.png" },
+    { name: "Điện thoại", src: "icons/smartphone.png" },
+    { name: "Nhà bếp", src: "icons/kitchen.png" },
+    { name: "Quần áo", src: "icons/clother.png" },
+    { name: "Mỹ Phẩm", src: "icons/cosmetics.png" },
+    { name: "Sách", src: "icons/book.png" },
 ];
 
-const FlashSaleCard = ({ product }) => {
-    const getFirstImage = (imagesUrlString) => {
-        if (!imagesUrlString) return '';
-        const urls = imagesUrlString.split('|');
-        return urls[0] || '';
-    };
+// Dữ liệu tĩnh cho Flash Sale dưới danh mục
+const flashSaleProducts = [
+    {
+        ID: 1,
+        Name: "Điện thoại Samsung Galaxy A05s",
+        MainImage: "https://salt.tikicdn.com/ts/product/e5/d4/5d/ea1dc1442910474d405c978bfafa7a8f.jpg",
+        OriginalPrice: 4490000,
+        Price: 3990000,
+        DiscountPercent: 11,
+        RatingAverage: 4.8,
+        ReviewCount: 5,
+        Brand: "Samsung",
+        Stock: 100,
+    },
+    {
+        ID: 2,
+        Name: "Tai nghe Bluetooth AirPods Pro",
+        MainImage: "https://salt.tikicdn.com/ts/product/a3/b8/6a/d6bd65a7f436803b586d19a7fbdbcc70.jpg",
+        OriginalPrice: 5990000,
+        Price: 5990000,
+        DiscountPercent: 0,
+        RatingAverage: 4.9,
+        ReviewCount: 10,
+        Brand: "Apple",
+        Stock: 50,
+    },
+    {
+        ID: 3,
+        Name: "Máy lọc không khí Xiaomi",
+        MainImage: "https://salt.tikicdn.com/ts/product/b0/6c/2c/5296291621f1c171c85386028bb40541.jpg",
+        OriginalPrice: 2990000,
+        Price: 2490000,
+        DiscountPercent: 17,
+        RatingAverage: 4.7,
+        ReviewCount: 8,
+        Brand: "Xiaomi",
+        Stock: 30,
+    },
+];
 
-    const formatPriceVND = (price) => {
-        return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + 'đ';
-    };
+const getFirstImage = (imagesUrlString) => {
+    if (!imagesUrlString) return "";
+    const urls = imagesUrlString.split("|");
+    return urls[0] || "";
+};
+
+const formatPriceVND = (price) => {
+    if (!price && price !== 0) return "-";
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "đ";
+};
+
+// Component Countdown Timer
+const CountdownTimer = ({ endTime }) => {
+    const [timeLeft, setTimeLeft] = useState(0);
+
+    useEffect(() => {
+        // Tính toán thời gian còn lại
+        const updateTimer = () => {
+            const now = new Date();
+            const timeDiff = endTime - now;
+            if (timeDiff <= 0) {
+                setTimeLeft(0);
+                return;
+            }
+            setTimeLeft(timeDiff);
+        };
+
+        updateTimer(); // Cập nhật ngay lập tức
+        const interval = setInterval(updateTimer, 1000); // Cập nhật mỗi giây
+        return () => clearInterval(interval); // Dọn dẹp interval khi component unmount
+    }, [endTime]);
+
+    // Chuyển đổi thời gian còn lại thành giờ, phút, giây
+    const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+    // Định dạng 2 chữ số
+    const formatTime = (num) => num.toString().padStart(2, "0");
 
     return (
-        <Link to={`/product/${product.ID}`} className="bg-white border rounded-lg shadow-md hover:shadow-lg transition-shadow flex flex-col h-[500px] w-full">
-            <img
-                src={getFirstImage(product.MainImage)}
-                alt={product.Name}
-                className="w-full h-[200px] object-cover rounded-t-lg"
-            />
-            <div className="p-4 flex flex-col flex-grow">
-                <div className="flex flex-col" style={{ minHeight: '180px' }}>
-                    <h3 className="font-semibold text-base mb-1 line-clamp-2" title={product.Name}>
-                        {product.Name}
-                    </h3>
-                    <div className="mb-1">
-                        <p className="text-gray-500 line-through text-sm">
-                            {formatPriceVND(product.OriginalPrice)}
-                        </p>
-                        <p className="text-gray-700 font-bold">{formatPriceVND(product.Price)}</p>
-                        {product.DiscountPercent > 0 && (
-                            <span className="text-red-500 text-sm">(-{product.DiscountPercent}%)</span>
-                        )}
-                    </div>
-                    <div className="flex items-center mb-1">
-                        <div className="flex">
-                            {Array.from({ length: 5 }, (_, i) => (
-                                <span key={i} className={i < Math.round(product.RatingAverage) ? 'text-yellow-500' : 'text-gray-300'}>
-                                    ★
-                                </span>
-                            ))}
-                        </div>
-                        <span className="text-sm text-gray-500 ml-2">({product.ReviewCount})</span>
-                    </div>
-                    <p className="text-sm text-gray-600 mb-1">Brand: {product.Brand}</p>
-                    <p className="text-sm text-gray-500 mb-1">Stock: {product.Stock}</p>
-                </div>
-                <button className="w-full bg-blue-500 text-white py-1.5 rounded-lg hover:bg-blue-600 transition-colors text-sm mt-auto">
-                    Xem chi tiết
-                </button>
-            </div>
-        </Link>
+        <div className="flex items-center gap-2 text-lg font-bold text-red-600">
+            <span>Kết thúc sau:</span>
+            <span className="bg-red-100 px-2 py-1 rounded">{formatTime(hours)}</span>:
+            <span className="bg-red-100 px-2 py-1 rounded">{formatTime(minutes)}</span>:
+            <span className="bg-red-100 px-2 py-1 rounded">{formatTime(seconds)}</span>
+        </div>
     );
 };
+
+const RatingStars = ({ rating }) => (
+    <div className="flex items-center gap-0.5">
+        {Array.from({ length: 5 }).map((_, i) => (
+            <span
+                key={i}
+                className={`text-xs md:text-sm ${
+                    i < Math.round(rating) ? "text-yellow-400" : "text-gray-300"
+                }`}
+            >
+        ★
+      </span>
+        ))}
+    </div>
+);
+
+const FlashSaleCard = ({ product }) => (
+    <Link
+        to={`/product/${product.ID}`}
+        className="group relative flex flex-col overflow-hidden rounded-2xl border bg-white shadow-sm transition-all hover:shadow-lg"
+    >
+        {/* Image */}
+        <img
+            src={getFirstImage(product.MainImage)}
+            alt={product.Name}
+            className="h-48 w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            loading="lazy"
+        />
+        {/* Info */}
+        <div className="flex flex-grow flex-col gap-1 p-4 pb-5">
+            <h3
+                className="line-clamp-2 text-base font-semibold text-gray-800"
+                title={product.Name}
+            >
+                {product.Name}
+            </h3>
+
+            <div className="flex flex-col text-sm">
+                {product.Price !== product.OriginalPrice && product.OriginalPrice > 0 && (
+                    <span className="text-gray-400 line-through">
+            {formatPriceVND(product.OriginalPrice)}
+          </span>
+                )}
+                <span className="font-bold text-red-600">
+          {formatPriceVND(product.Price)}
+        </span>
+                {product.Price !== product.OriginalPrice && product.DiscountPercent > 0 && (
+                    <span className="text-xs text-red-500">(-{product.DiscountPercent}% OFF)</span>
+                )}
+            </div>
+
+            <div className="flex items-center gap-1 text-xs text-gray-500">
+                <RatingStars rating={product.RatingAverage} /> ({product.ReviewCount})
+            </div>
+
+            <p className="text-xs text-gray-500">Brand: {product.Brand}</p>
+            <p className="text-xs text-gray-500">Stock: {product.Stock}</p>
+
+            <button
+                className="mt-auto rounded-lg bg-indigo-600 py-2 text-xs font-semibold text-white shadow-md transition-colors hover:bg-indigo-700"
+                type="button"
+            >
+                Xem chi tiết
+            </button>
+        </div>
+    </Link>
+);
+
+const SkeletonCard = () => (
+    <div className="animate-pulse flex flex-col overflow-hidden rounded-2xl bg-gray-100 p-4 shadow-sm">
+        <div className="mb-4 h-48 w-full rounded-lg bg-gray-200" />
+        <div className="h-3 w-3/4 rounded bg-gray-200 mb-2" />
+        <div className="h-3 w-1/2 rounded bg-gray-200 mb-2" />
+        <div className="h-3 w-1/4 rounded bg-gray-200" />
+    </div>
+);
 
 export default function Home() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -82,28 +198,31 @@ export default function Home() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+
+    const endTime = new Date("May 18, 2025 20:09:00 GMT+0700");
+
     useEffect(() => {
         const fetchProducts = async () => {
             setLoading(true);
             try {
-                const response = await fetch(`${config.apiUrl}/api/v1/products?page=1&limit=5`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'ngrok-skip-browser-warning': 'true',
-                    },
-                });
+                const response = await fetch(
+                    `${config.apiUrl}/api/v1/products?page=1&limit=10`,
+                    {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "ngrok-skip-browser-warning": "true",
+                        },
+                    }
+                );
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
                 const data = await response.json();
                 const productList = data.data || [];
-                if (productList.length === 0) {
-                    throw new Error('Không tìm thấy sản phẩm');
-                }
                 setProducts(productList);
             } catch (err) {
-                console.error('Error fetching products:', err);
+                console.error("Error fetching products:", err);
                 setError(err.message);
             } finally {
                 setLoading(false);
@@ -113,214 +232,232 @@ export default function Home() {
         fetchProducts();
     }, []);
 
+    const NavLink = ({ item }) => (
+        <Link
+            to={item.href}
+            className="text-sm font-semibold text-gray-700 transition-colors hover:text-indigo-600 md:text-base"
+        >
+            {item.name}
+        </Link>
+    );
+
     return (
-        <div className="bg-white">
-            <header className="absolute inset-x-0 top-0 z-50 bg-black bg-transparent">
-                <nav aria-label="Global" className="flex items-center justify-between p-6 lg:px-8">
-                    <div className="flex lg:flex-1">
-                        <a href="#" className="-m-1.5 p-1.5">
-                            <img
-                                alt=""
-                                src="logo.png"
-                                className="h-[150px] w-auto"
-                            />
-                        </a>
+        <div className="relative min-h-screen w-full bg-gray-50 text-gray-800">
+            <header className="fixed inset-x-0 top-0 z-50 backdrop-blur-sm bg-white/70 shadow-sm">
+                <nav
+                    aria-label="Global"
+                    className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-8"
+                >
+                    <div className="flex items-center gap-2">
+                        <img src="/logo.png" alt="logo" className="h-8 w-auto" />
+                        <span className="hidden text-lg font-bold md:block">BPSTORE</span>
                     </div>
-                    <div className="flex lg:hidden">
-                        <button
-                            type="button"
-                            onClick={() => setMobileMenuOpen(true)}
-                            className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-white"
-                        >
-                            <Bars3Icon aria-hidden="true" className="h-6 w-6" />
-                        </button>
-                    </div>
-                    <div className="hidden lg:flex lg:gap-x-12">
+
+                    <div className="hidden items-center gap-8 md:flex">
                         {navigation.map((item) => (
-                            <Link key={item.name} to={item.href} className="text-md font-extrabold leading-6 text-white">
-                                {item.name}
-                            </Link>
+                            <NavLink key={item.name} item={item} />
                         ))}
                     </div>
-                    <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-                        <Link to="signup" className="text-md font-extrabold leading-6 text-white">
-                            Signup <span aria-hidden="true"></span>
+
+                    <div className="hidden items-center gap-4 md:flex">
+                        <Link
+                            to="/signup"
+                            className="text-sm font-semibold transition-colors hover:text-indigo-600"
+                        >
+                            Signup
                         </Link>
-                        <Link to="login" className="ml-6 text-md font-extrabold leading-6 text-white">
-                            Log in <span aria-hidden="true">→</span>
+                        <Link
+                            to="/login"
+                            className="rounded-lg bg-indigo-600 px-4 py-1.5 text-sm font-semibold text-white shadow-md transition-colors hover:bg-indigo-700"
+                        >
+                            Log in
                         </Link>
                     </div>
+
+                    <button
+                        onClick={() => setMobileMenuOpen(true)}
+                        className="flex items-center md:hidden"
+                    >
+                        <Bars3Icon className="h-6 w-6" />
+                    </button>
                 </nav>
-                <Dialog open={mobileMenuOpen} onClose={setMobileMenuOpen} className="lg:hidden">
-                    <div className="fixed inset-0 z-50" />
-                    <DialogPanel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
-                        <div className="flex items-center justify-between">
-                            <button
-                                type="button"
-                                onClick={() => setMobileMenuOpen(false)}
-                                className="-m-2.5 rounded-md p-2.5 text-gray-700"
-                            >
+
+                <Dialog open={mobileMenuOpen} onClose={setMobileMenuOpen} className="md:hidden">
+                    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm" />
+                    <DialogPanel className="fixed inset-y-0 right-0 z-50 w-80 overflow-y-auto bg-white px-6 py-6">
+                        <div className="flex items-center justify-between mb-6">
+                            <span className="text-lg font-bold">Menu</span>
+                            <button onClick={() => setMobileMenuOpen(false)}>
                                 <XMarkIcon className="h-6 w-6" />
                             </button>
                         </div>
-                        <div className="mt-6 flow-root">
-                            <div className="-my-6 divide-y divide-gray-500/10">
-                                <div className="space-y-2 py-6">
-                                    {navigation.map((item) => (
-                                        <a
-                                            key={item.name}
-                                            href={item.href}
-                                            className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
-                                        >
-                                            {item.name}
-                                        </a>
-                                    ))}
-                                </div>
-                                <div className="py-6">
-                                    <a
-                                        href="#"
-                                        className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
-                                    >
-                                        Log in
-                                    </a>
-                                </div>
+                        <div className="flex flex-col gap-4">
+                            {navigation.map((item) => (
+                                <NavLink key={item.name} item={item} />
+                            ))}
+                            <div className="mt-4 flex gap-4">
+                                <Link to="/signup" className="font-semibold text-indigo-600">
+                                    Signup
+                                </Link>
+                                <Link to="/login" className="font-semibold text-indigo-600">
+                                    Log in
+                                </Link>
                             </div>
                         </div>
                     </DialogPanel>
                 </Dialog>
             </header>
 
-            <div className="relative isolate px-6 pt-14 lg:px-8 bg-black">
-                <div
-                    aria-hidden="true"
-                    className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80"
-                >
-                    <div
-                        style={{
-                            clipPath:
-                                'polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)',
-                        }}
-                        className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
-                    />
-                </div>
-                <div className="mx-auto max-w-2xl py-32 sm:py-48 lg:py-56">
-                    <div className="text-center">
-                        <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
-                            Trải nghiệm mua hàng không giới hạn
-                        </h1>
-                        <p className="mt-6 text-lg leading-8 text-white">
-                            Thử nghiệm mua hàng hoàn toàn mới trên nền tảng của chúng tôi. Mua sắm mọi lúc, mọi nơi, mọi thiết bị.
-                        </p>
-                        <div className="mt-10 flex items-center justify-center gap-x-6">
-                            <a
-                                href="#"
-                                className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                            >
-                                Get started
-                            </a>
-                            <a href="#" className="text-sm font-semibold leading-6 text-white">
-                                Learn more <span aria-hidden="true">→</span>
-                            </a>
-                        </div>
+            <section className="relative isolate flex h-[70vh] items-center justify-center overflow-hidden bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 px-4 pt-20 text-center text-white">
+                <div className="z-10 flex flex-col items-center gap-6 max-w-2xl">
+                    <h1 className="text-3xl font-extrabold leading-tight sm:text-5xl md:text-6xl">
+                        Trải nghiệm mua hàng <span className="inline-block bg-white/20 px-2">không giới hạn</span>
+                    </h1>
+                    <p className="text-sm sm:text-lg md:text-xl">
+                        Mua sắm mọi lúc, mọi nơi, mọi thiết bị với ShopSmart – nền tảng thương mại điện tử tối ưu cho bạn.
+                    </p>
+                    <div className="flex flex-wrap items-center justify-center gap-4">
+                        <Link
+                            to="/signup"
+                            className="rounded-full bg-white px-6 py-2 text-sm font-semibold text-indigo-700 shadow-md transition hover:shadow-lg"
+                        >
+                            Bắt đầu ngay
+                        </Link>
+                        <a
+                            href="#flash-sale"
+                            className="flex items-center gap-1 text-sm font-semibold hover:underline"
+                        >
+                            Khám phá thêm <ChevronRightIcon className="h-4 w-4" />
+                        </a>
                     </div>
                 </div>
-            </div>
 
-            <section className="bg-white dark:bg-gray-900">
-                <div className="py-8 px-4 mx-auto max-w-screen-xl sm:py-16 lg:px-6">
-                    <div className="space-y-8 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-12 md:space-y-0">
-                        <div>
-                            <div className="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-primary-100 lg:h-12 lg:w-12 dark:bg-primary-900">
-                                <img src="/icons/freeship.svg" alt="freeship icons" className="w-9 h-9 lg:w-6 lg:h-6" />
-                            </div>
-                            <h3 className="mb-2 text-2xl font-extrabold text-gray-50">Freeship</h3>
-                            <p className="text-gray-500 dark:text-gray-400">
-                                Săn mã Freeship Shopee hôm nay - Voucher Freeship Xtra siêu ưu đãi. Tràn ngập mã miễn phí vận chuyển Shopee chính thức trên toàn quốc.
+                <div
+                    aria-hidden
+                    className="absolute -left-20 -top-20 h-80 w-80 rounded-full bg-white/10 blur-3xl"
+                />
+                <div
+                    aria-hidden
+                    className="absolute -bottom-16 right-0 h-64 w-64 rounded-full bg-white/10 blur-3xl"
+                />
+            </section>
+
+            <section className="bg-white py-16">
+                <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 md:grid-cols-3">
+                    {[
+                        {
+                            icon: "/icons/freeship.svg",
+                            title: "Freeship",
+                            desc: "Săn mã Freeship Shopee hôm nay - Voucher Freeship Xtra siêu ưu đãi trên toàn quốc.",
+                        },
+                        {
+                            icon: "/icons/payicons.svg",
+                            title: "Thanh toán tiện dụng",
+                            desc: "Trải nghiệm thanh toán dễ dàng với nhiều phương thức thanh toán khác nhau.",
+                        },
+                        {
+                            icon: "/icons/returnicons.svg",
+                            title: "Đổi trả hàng dễ dàng",
+                            desc: "Dễ dàng đổi trả với người bán, yên tâm mua sắm không lo rủi ro.",
+                        },
+                    ].map((item) => (
+                        <div key={item.title} className="flex flex-col items-center text-center">
+              <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-indigo-50 p-3 ring-4 ring-indigo-100">
+                <img src={item.icon} alt="icon" className="h-8 w-8" />
+              </span>
+                            <h3 className="mb-2 text-lg font-extrabold text-gray-800 md:text-2xl">
+                                {item.title}
+                            </h3>
+                            <p className="max-w-xs text-sm text-gray-500 md:text-base">
+                                {item.desc}
                             </p>
                         </div>
-                        <div>
-                            <div className="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-primary-100 lg:h-12 lg:w-12 dark:bg-primary-900">
-                                <img src="/icons/payicons.svg" alt="freeship icons" className="w-9 h-9 lg:w-6 lg:h-6" />
-                            </div>
-                            <h3 className="mb-2 text-2xl font-extrabold text-gray-50">Thanh toán tiện dụng</h3>
-                            <p className="text-gray-500 dark:text-gray-400">
-                                Trải nghiệm thanh toán dễ dàng với nhiều phương thức thanh toán khác nhau
-                            </p>
-                        </div>
-                        <div>
-                            <div className="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-primary-100 lg:h-12 lg:w-12 dark:bg-primary-900">
-                                <img src="/icons/returnicons.svg" alt="freeship icons" className="w-9 h-9 lg:w-6 lg:h-6" />
-                            </div>
-                            <h3 className="mb-2 text-2xl font-extrabold text-gray-50">Đổi trả hàng dễ dàng</h3>
-                            <p className="text-gray-500 dark:text-gray-400">
-                                Dễ dàng đổi trả hàng với người bán, yên tâm sử dụng với đơn hàng của mình
-                            </p>
-                        </div>
-                    </div>
+                    ))}
                 </div>
             </section>
 
             <ImageSlider />
 
-            <div className="grid grid-cols-6 grid-rows-1 gap-0 mt-4">
-                <div><InterfaceProduct name={categories[0].name} src={categories[0].src} /></div>
-                <div>
-                    <Link to="/products">
-                        <InterfaceProduct name={categories[1].name} src={categories[1].src} />
-                    </Link>
+            <section className="mx-auto mt-8 max-w-7xl px-4">
+                <div className="grid grid-cols-3 gap-4 sm:grid-cols-6">
+                    {categories.map((cat) => (
+                        <InterfaceProduct key={cat.name} name={cat.name} src={cat.src} />
+                    ))}
                 </div>
-                <div><InterfaceProduct name={categories[2].name} src={categories[2].src} /></div>
-                <div><InterfaceProduct name={categories[3].name} src={categories[3].src} /></div>
-                <div><InterfaceProduct name={categories[4].name} src={categories[4].src} /></div>
-                <div><InterfaceProduct name={categories[5].name} src={categories[5].src} /></div>
-            </div>
+            </section>
 
-            <div className="bg-white mt-5">
-                <div className="w-4/5 mx-auto">
-                    <h3 className="mb-2 text-3xl font-extrabold text-left p-4">
-                        Chỉ trong hôm nay - Nhanh chân mua sắm ngay
-                    </h3>
+            {/* Flash Sale dưới danh mục */}
+            <section className="mx-auto mt-8 max-w-7xl px-4">
+                <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-xl font-extrabold md:text-2xl">
+                        Flash Sale Hôm Nay
+                    </h2>
+                    <a
+                        href="#flash-sale"
+                        className="flex items-center gap-1 text-sm font-semibold text-indigo-600 hover:underline"
+                    >
+                        Xem thêm <ChevronRightIcon className="h-4 w-4" />
+                    </a>
                 </div>
-                {loading && <p className="text-center">Đang tải sản phẩm...</p>}
-                {error && <p className="text-center text-red-500">{error}</p>}
-                {!loading && !error && products.length === 0 && (
-                    <p className="text-center">Không tìm thấy sản phẩm giảm giá.</p>
-                )}
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 w-4/5 mx-auto">
-                    {products.map((product) => (
+                <CountdownTimer endTime={endTime} />
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-3">
+                    {flashSaleProducts.map((product) => (
                         <FlashSaleCard key={product.ID} product={product} />
                     ))}
                 </div>
-            </div>
+            </section>
 
-            <div className="w-full max-w-screen-xl mx-auto p-4 md:py-8">
-                <div className="sm:flex sm:items-center sm:justify-between">
-                    <a href="https://flowbite.com/" className="flex items-center mb-4 sm:mb-0 space-x-3 rtl:space-x-reverse">
-                        <img src="https://flowbite.com/docs/images/logo.svg" className="h-8" alt="Flowbite Logo" />
-                        <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
-                            Flowbite
-                        </span>
-                    </a>
-                    <ul className="flex flex-wrap items-center mb-6 text-sm font-medium text-gray-500 sm:mb-0 dark:text-gray-400">
+            <section id="flash-sale" className="mt-16 bg-white py-16">
+                <div className="mx-auto max-w-7xl px-4">
+                    <h2 className="mb-4 text-2xl font-extrabold md:text-3xl">
+                        Chỉ trong hôm nay – Nhanh tay mua sắm!
+                    </h2>
+                    <CountdownTimer endTime={endTime} />
+                    {error && (
+                        <p className="text-center text-red-500">{error}</p>
+                    )}
+                    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+                        {loading
+                            ? Array.from({ length: 10 }).map((_, i) => <SkeletonCard key={i} />)
+                            : products.map((product) => (
+                                <FlashSaleCard key={product.ID} product={product} />
+                            ))}
+                    </div>
+                </div>
+            </section>
+
+            <footer className="border-t bg-gray-50 py-10">
+                <div className="mx-auto flex max-w-7xl flex-col items-center gap-6 px-4 md:flex-row md:justify-between">
+                    <Link to="/" className="flex items-center gap-2 font-bold">
+                        <img src="/logo.png" alt="logo" className="h-8 w-auto" /> ShopSmart
+                    </Link>
+                    <ul className="flex flex-wrap items-center justify-center gap-4 text-sm text-gray-600">
                         <li>
-                            <a href="#" className="hover:underline me-4 md:me-6">About</a>
+                            <a href="#" className="transition-colors hover:text-indigo-600">
+                                About
+                            </a>
                         </li>
                         <li>
-                            <a href="#" className="hover:underline me-4 md:me-6">Privacy Policy</a>
+                            <a href="#" className="transition-colors hover:text-indigo-600">
+                                Privacy Policy
+                            </a>
                         </li>
                         <li>
-                            <a href="#" className="hover:underline me-4 md:me-6">Licensing</a>
+                            <a href="#" className="transition-colors hover:text-indigo-600">
+                                Licensing
+                            </a>
                         </li>
                         <li>
-                            <a href="#" className="hover:underline">Contact</a>
+                            <a href="#" className="transition-colors hover:text-indigo-600">
+                                Contact
+                            </a>
                         </li>
                     </ul>
+                    <span className="text-xs text-gray-400">
+            © {new Date().getFullYear()} ShopSmart. All rights reserved.
+          </span>
                 </div>
-                <hr className="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8" />
-                <span className="block text-sm text-gray-500 sm:text-center dark:text-gray-400">
-                    © 2023 <a href="https://flowbite.com/" className="hover:underline">Flowbite™</a>. All Rights Reserved.
-                </span>
-            </div>
+            </footer>
         </div>
     );
 }
