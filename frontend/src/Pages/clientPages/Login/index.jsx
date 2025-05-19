@@ -5,6 +5,43 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import config from "../../../config";
 
+
+async function fetchAuthToken(email, password) {
+    const API_URL = config.apiUrl + "/api/v1/auth/login";
+
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'ngrok-skip-browser-warning': 'true'
+            },
+            body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            return {
+                success: true,
+                token: data.token,
+                username: data.user.Name,
+                role: data.user.Role
+            };
+        } else {
+            return {
+                success: false,
+                error: data.message || "Email hoặc mật khẩu không hợp lệ"
+            };
+        }
+    } catch (error) {
+        return {
+            success: false,
+            error: "Đăng nhập thất bại: " + error.message
+        };
+    }
+}
+
 export default function Login() {
     const [email, setEmail] = React.useState("");
     const [password, setPassword] = React.useState("");
@@ -12,32 +49,18 @@ export default function Login() {
     const { login } = useAuth();
     const navigate = useNavigate();
 
-    const API_URL = config.apiUrl + "/api/v1/auth/login";
-
     const handleLogin = async (e) => {
         e.preventDefault();
-        try {
-            const response = await fetch(API_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'ngrok-skip-browser-warning': 'true'
-                },
-                body: JSON.stringify({ email, password })
-            });
-            const data = await response.json();
-            if (response.ok) {
-                console.log("message: ", data.msg);
-                const token = data.token;
-                const username = data.user.Name;
-                const role = data.user.Role;
-                login(token, role, username);
-                navigate("/");
-            } else {
-                setError(data.message || "Invalid email or password");
-            }
-        } catch (error) {
-            setError("Login failed: " + error.message);
+        setError(""); // Xóa lỗi trước đó
+
+        const result = await fetchAuthToken(email, password);
+
+        if (result.success) {
+            console.log("message: ", "User logged in successfully");
+            login(result.token, result.role, result.username);
+            navigate("/");
+        } else {
+            setError(result.error);
         }
     };
 
@@ -150,7 +173,8 @@ export default function Login() {
                             <p className='font-medium text-base text-gray-600'>Don't have an account?</p>
                             <Link
                                 to='/signup'
-                                className='ml-2 font-medium text-base text-violet-600 hover:text-violet-700 transition-colors'
+                                className='ml-2 font-medium text bulunmaktadır
+base text-violet-600 hover:text-violet-700 transition-colors'
                             >
                                 Sign up
                             </Link>
