@@ -4,13 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="23bdf983-10b4-483c-a6dd-89a34e8ad90a" name="Changes" comment="cauhinhAnt">
-      <change afterPath="$PROJECT_DIR$/src/Components/User/UserAcount.jsx" afterDir="false" />
+    <list default="true" id="23bdf983-10b4-483c-a6dd-89a34e8ad90a" name="Changes" comment="ThemGiaoDienHome,chỉnhhienGia,themgiaodienboloc">
+      <change afterPath="$PROJECT_DIR$/src/Pages/clientPages/UserInformation/UserInfor.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Components/ProductGrid/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/ProductGrid/index.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Components/Slidebar/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Components/Slidebar/index.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Pages/clientPages/Topbar/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pages/clientPages/Topbar/index.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/AuthContext.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/AuthContext.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Pages/clientPages/Home/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pages/clientPages/Home/index.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Pages/clientPages/Login/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pages/clientPages/Login/index.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Pages/clientPages/UserInformation/index.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pages/clientPages/UserInformation/index.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,6 +21,7 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="JavaScript File" />
         <option value="JSX File" />
       </list>
     </option>
@@ -32,18 +34,18 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "BackSoftDEV"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;BackSoftDEV&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/HwuuPhuc0904/BPStore.git",
-    "accountId": "6b06ed6a-841d-4263-aae3-a72633af3bc1"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/HwuuPhuc0904/BPStore.git&quot;,
+    &quot;accountId&quot;: &quot;6b06ed6a-841d-4263-aae3-a72633af3bc1&quot;
   }
-}]]></component>
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 5
 }</component>
@@ -55,26 +57,32 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Node.js.index.jsx.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "bachfe",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "D:/FPT POLYTECHNIC/DUANTEAMPHUC/BPStore/frontend/src/Components/CardProduct",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_interpreter_path": "node",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "settings.nodejs",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Node.js.index.jsx.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;bachfe&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/FPT POLYTECHNIC/DUANTEAMPHUC/BPStore/frontend&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_interpreter_path&quot;: &quot;node&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\NGUYEN DINH BACH\\AppData\\Local\\JetBrains\\IntelliJ IDEA 2024.2.3\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\FPT POLYTECHNIC\DUANTEAMPHUC\BPStore\frontend\src\Pages\clientPages" />
+      <recent name="D:\FPT POLYTECHNIC\DUANTEAMPHUC\BPStore\frontend\src" />
       <recent name="D:\FPT POLYTECHNIC\DUANTEAMPHUC\BPStore\frontend\src\Components\CardProduct" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\FPT POLYTECHNIC\DUANTEAMPHUC\BPStore\frontend\src\Components\ProductGrid" />
     </key>
   </component>
   <component name="SharedIndexes">
@@ -94,7 +102,22 @@
       <option name="presentableId" value="Default" />
       <updated>1729929314504</updated>
       <workItem from="1729929315973" duration="80000" />
-      <workItem from="1745289002907" duration="6282000" />
+      <workItem from="1745289002907" duration="9259000" />
+      <workItem from="1745335151136" duration="10549000" />
+      <workItem from="1746177552291" duration="5577000" />
+      <workItem from="1747068284119" duration="2763000" />
+      <workItem from="1747158021742" duration="202000" />
+      <workItem from="1747318266710" duration="10804000" />
+      <workItem from="1747383209238" duration="1367000" />
+      <workItem from="1747384915326" duration="536000" />
+      <workItem from="1747385465362" duration="494000" />
+      <workItem from="1747388356632" duration="3129000" />
+      <workItem from="1747493458792" duration="7670000" />
+      <workItem from="1747509008991" duration="39000" />
+      <workItem from="1747509070103" duration="4000" />
+      <workItem from="1747509081360" duration="55000" />
+      <workItem from="1747560772529" duration="6081000" />
+      <workItem from="1747668662658" duration="9152000" />
     </task>
     <task id="LOCAL-00001" summary="cauhinhAnt">
       <option name="closed" value="true" />
@@ -104,7 +127,79 @@
       <option name="project" value="LOCAL" />
       <updated>1745291360808</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Collection">
+      <option name="closed" value="true" />
+      <created>1745295706100</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1745295706100</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Odertracking">
+      <option name="closed" value="true" />
+      <created>1745335902237</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1745335902237</updated>
+    </task>
+    <task id="LOCAL-00004" summary="ấdsd">
+      <option name="closed" value="true" />
+      <created>1745335946058</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1745335946058</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Routers_odertracking_account_AuthContextBasic">
+      <option name="closed" value="true" />
+      <created>1745346405014</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1745346405014</updated>
+    </task>
+    <task id="LOCAL-00006" summary="formAdmin,ProductList,ProductCatalog,iconsant">
+      <option name="closed" value="true" />
+      <created>1746182865616</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1746182865616</updated>
+    </task>
+    <task id="LOCAL-00007" summary="formUserlist,add">
+      <option name="closed" value="true" />
+      <created>1747070975104</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1747070975104</updated>
+    </task>
+    <task id="LOCAL-00008" summary="tesst">
+      <option name="closed" value="true" />
+      <created>1747158108758</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1747158108758</updated>
+    </task>
+    <task id="LOCAL-00009" summary="callapiproductdetail,GiaodienProduct">
+      <option name="closed" value="true" />
+      <created>1747329891747</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1747329891747</updated>
+    </task>
+    <task id="LOCAL-00010" summary="ThemGiaoDienHome,chỉnhhienGia,themgiaodienboloc">
+      <option name="closed" value="true" />
+      <created>1747566773152</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1747566773152</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -112,7 +207,16 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="cauhinhAnt" />
-    <option name="LAST_COMMIT_MESSAGE" value="cauhinhAnt" />
+    <MESSAGE value="Collection" />
+    <MESSAGE value="Odertracking" />
+    <MESSAGE value="ấdsd" />
+    <MESSAGE value="Routers_odertracking_account_AuthContextBasic" />
+    <MESSAGE value="formAdmin,ProductList,ProductCatalog,iconsant" />
+    <MESSAGE value="formUserlist,add" />
+    <MESSAGE value="tesst" />
+    <MESSAGE value="callapiproductdetail,GiaodienProduct" />
+    <MESSAGE value="ThemGiaoDienHome,chỉnhhienGia,themgiaodienboloc" />
+    <option name="LAST_COMMIT_MESSAGE" value="ThemGiaoDienHome,chỉnhhienGia,themgiaodienboloc" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

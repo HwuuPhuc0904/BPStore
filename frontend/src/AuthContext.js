@@ -1,5 +1,5 @@
-
 import React, { createContext, useContext, useState, useEffect } from "react";
+
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -7,24 +7,30 @@ export const AuthProvider = ({ children }) => {
     const [userRole, setUserRole] = useState(localStorage.getItem("role"));
     const [username, setUsername] = useState(localStorage.getItem("username"));
 
-
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        const role = localStorage.getItem("role");
-        const username = localStorage.getItem("username");
-       
-        if (token) {
-            setIsAuthenticated(true);
-            setUserRole(role);
-            setUsername(username);
-        } else {
-            setIsAuthenticated(false);
-            setUserRole(null)
-            setUsername(null)
-        }
-    }, [])
+        const handleStorageChange = () => {
+            const token = localStorage.getItem("token");
+            const role = localStorage.getItem("role");
+            const username = localStorage.getItem("username");
+            if (token) {
+                setIsAuthenticated(true);
+                setUserRole(role);
+                setUsername(username);
+            } else {
+                setIsAuthenticated(false);
+                setUserRole(null);
+                setUsername(null);
+            }
+        };
 
-    const login = (token, role,username) => {
+        handleStorageChange();
+        window.addEventListener("storage", handleStorageChange);
+        return () => {
+            window.removeEventListener("storage", handleStorageChange);
+        };
+    }, []);
+
+    const login = (token, role, username) => {
         localStorage.setItem("token", token);
         localStorage.setItem("role", role);
         localStorage.setItem("username", username);
@@ -36,11 +42,11 @@ export const AuthProvider = ({ children }) => {
     const logout = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("role");
-        sessionStorage.removeItem("username");
+        localStorage.removeItem("username");
         setIsAuthenticated(false);
         setUserRole(null);
+        setUsername(null);
     };
-
 
     return (
         <AuthContext.Provider value={{ isAuthenticated, userRole, username, login, logout }}>

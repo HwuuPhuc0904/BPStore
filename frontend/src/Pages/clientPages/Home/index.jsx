@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Dialog, DialogPanel } from "@headlessui/react";
 import {
     Bars3Icon,
@@ -9,6 +9,7 @@ import {
 import ImageSlider from "../../../Components/ImageSlider";
 import InterfaceProduct from "../../../Components/InterfaceProduct";
 import config from "../../../config";
+import { useAuth } from "../../../AuthContext"; // Thêm useAuth
 
 const navigation = [
     { name: "Products", href: "/products" },
@@ -26,7 +27,6 @@ const categories = [
     { name: "Sách", src: "icons/book.png" },
 ];
 
-// Dữ liệu tĩnh cho Flash Sale dưới danh mục
 const flashSaleProducts = [
     {
         ID: 1,
@@ -77,12 +77,10 @@ const formatPriceVND = (price) => {
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "đ";
 };
 
-// Component Countdown Timer
 const CountdownTimer = ({ endTime }) => {
     const [timeLeft, setTimeLeft] = useState(0);
 
     useEffect(() => {
-        // Tính toán thời gian còn lại
         const updateTimer = () => {
             const now = new Date();
             const timeDiff = endTime - now;
@@ -93,17 +91,15 @@ const CountdownTimer = ({ endTime }) => {
             setTimeLeft(timeDiff);
         };
 
-        updateTimer(); // Cập nhật ngay lập tức
-        const interval = setInterval(updateTimer, 1000); // Cập nhật mỗi giây
-        return () => clearInterval(interval); // Dọn dẹp interval khi component unmount
+        updateTimer();
+        const interval = setInterval(updateTimer, 1000);
+        return () => clearInterval(interval);
     }, [endTime]);
 
-    // Chuyển đổi thời gian còn lại thành giờ, phút, giây
     const hours = Math.floor(timeLeft / (1000 * 60 * 60));
     const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-    // Định dạng 2 chữ số
     const formatTime = (num) => num.toString().padStart(2, "0");
 
     return (
@@ -121,12 +117,10 @@ const RatingStars = ({ rating }) => (
         {Array.from({ length: 5 }).map((_, i) => (
             <span
                 key={i}
-                className={`text-xs md:text-sm ${
-                    i < Math.round(rating) ? "text-yellow-400" : "text-gray-300"
-                }`}
+                className={`text-xs md:text-sm ${i < Math.round(rating) ? "text-yellow-400" : "text-gray-300"}`}
             >
-        ★
-      </span>
+                ★
+            </span>
         ))}
     </div>
 );
@@ -136,14 +130,12 @@ const FlashSaleCard = ({ product }) => (
         to={`/product/${product.ID}`}
         className="group relative flex flex-col overflow-hidden rounded-2xl border bg-white shadow-sm transition-all hover:shadow-lg"
     >
-        {/* Image */}
         <img
             src={getFirstImage(product.MainImage)}
             alt={product.Name}
             className="h-48 w-full object-cover transition-transform duration-300 group-hover:scale-105"
             loading="lazy"
         />
-        {/* Info */}
         <div className="flex flex-grow flex-col gap-1 p-4 pb-5">
             <h3
                 className="line-clamp-2 text-base font-semibold text-gray-800"
@@ -151,28 +143,24 @@ const FlashSaleCard = ({ product }) => (
             >
                 {product.Name}
             </h3>
-
             <div className="flex flex-col text-sm">
                 {product.Price !== product.OriginalPrice && product.OriginalPrice > 0 && (
                     <span className="text-gray-400 line-through">
-            {formatPriceVND(product.OriginalPrice)}
-          </span>
+                        {formatPriceVND(product.OriginalPrice)}
+                    </span>
                 )}
                 <span className="font-bold text-red-600">
-          {formatPriceVND(product.Price)}
-        </span>
+                    {formatPriceVND(product.Price)}
+                </span>
                 {product.Price !== product.OriginalPrice && product.DiscountPercent > 0 && (
                     <span className="text-xs text-red-500">(-{product.DiscountPercent}% OFF)</span>
                 )}
             </div>
-
             <div className="flex items-center gap-1 text-xs text-gray-500">
                 <RatingStars rating={product.RatingAverage} /> ({product.ReviewCount})
             </div>
-
             <p className="text-xs text-gray-500">Brand: {product.Brand}</p>
             <p className="text-xs text-gray-500">Stock: {product.Stock}</p>
-
             <button
                 className="mt-auto rounded-lg bg-indigo-600 py-2 text-xs font-semibold text-white shadow-md transition-colors hover:bg-indigo-700"
                 type="button"
@@ -197,7 +185,8 @@ export default function Home() {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
+    const { isAuthenticated, logout, username } = useAuth(); // Sử dụng useAuth
+    const navigate = useNavigate();
 
     const endTime = new Date("May 18, 2025 20:09:00 GMT+0700");
 
@@ -241,6 +230,11 @@ export default function Home() {
         </Link>
     );
 
+    const handleLogout = () => {
+        logout();
+        navigate("/");
+    };
+
     return (
         <div className="relative min-h-screen w-full bg-gray-50 text-gray-800">
             <header className="fixed inset-x-0 top-0 z-50 backdrop-blur-sm bg-white/70 shadow-sm">
@@ -249,72 +243,118 @@ export default function Home() {
                     className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-8"
                 >
                     <div className="flex items-center gap-2">
-                        <img src="/logo.png" alt="logo" className="h-8 w-auto" />
+                        <img src="/logo.png" alt="logo" className="h-8 w-auto"/>
                         <span className="hidden text-lg font-bold md:block">BPSTORE</span>
                     </div>
 
                     <div className="hidden items-center gap-8 md:flex">
                         {navigation.map((item) => (
-                            <NavLink key={item.name} item={item} />
+                            <NavLink key={item.name} item={item}/>
                         ))}
                     </div>
 
                     <div className="hidden items-center gap-4 md:flex">
-                        <Link
-                            to="/signup"
-                            className="text-sm font-semibold transition-colors hover:text-indigo-600"
-                        >
-                            Signup
-                        </Link>
-                        <Link
-                            to="/login"
-                            className="rounded-lg bg-indigo-600 px-4 py-1.5 text-sm font-semibold text-white shadow-md transition-colors hover:bg-indigo-700"
-                        >
-                            Log in
-                        </Link>
+                        {isAuthenticated ? (
+                            <>
+                                <span className="text-sm font-semibold text-gray-700">
+                                    Hi, {username || "User"}
+                                </span>
+                                <Link
+                                    to="/user/information"
+                                    className="text-sm font-semibold transition-colors hover:text-indigo-600"
+                                >
+                                    Profile
+                                </Link>
+                                <button
+                                    onClick={handleLogout}
+                                    className="rounded-lg bg-red-600 px-4 py-1.5 text-sm font-semibold text-white shadow-md transition-colors hover:bg-red-700"
+                                >
+                                    Logout
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <Link
+                                    to="/signup"
+                                    className="text-sm font-semibold transition-colors hover:text-indigo-600"
+                                >
+                                    Signup
+                                </Link>
+                                <Link
+                                    to="/login"
+                                    className="rounded-lg bg-indigo-600 px-4 py-1.5 text-sm font-semibold text-white shadow-md transition-colors hover:bg-indigo-700"
+                                >
+                                    Log in
+                                </Link>
+                            </>
+                        )}
                     </div>
 
                     <button
                         onClick={() => setMobileMenuOpen(true)}
                         className="flex items-center md:hidden"
                     >
-                        <Bars3Icon className="h-6 w-6" />
+                        <Bars3Icon className="h-6 w-6"/>
                     </button>
                 </nav>
 
                 <Dialog open={mobileMenuOpen} onClose={setMobileMenuOpen} className="md:hidden">
-                    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm" />
+                    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm"/>
                     <DialogPanel className="fixed inset-y-0 right-0 z-50 w-80 overflow-y-auto bg-white px-6 py-6">
                         <div className="flex items-center justify-between mb-6">
                             <span className="text-lg font-bold">Menu</span>
                             <button onClick={() => setMobileMenuOpen(false)}>
-                                <XMarkIcon className="h-6 w-6" />
+                                <XMarkIcon className="h-6 w-6"/>
                             </button>
                         </div>
                         <div className="flex flex-col gap-4">
                             {navigation.map((item) => (
-                                <NavLink key={item.name} item={item} />
+                                <NavLink key={item.name} item={item}/>
                             ))}
-                            <div className="mt-4 flex gap-4">
-                                <Link to="/signup" className="font-semibold text-indigo-600">
-                                    Signup
-                                </Link>
-                                <Link to="/login" className="font-semibold text-indigo-600">
-                                    Log in
-                                </Link>
+                            <div className="mt-4 flex flex-col gap-4">
+                                {isAuthenticated ? (
+                                    <>
+                                        <span className="text-sm font-semibold text-gray-700">
+                                            Hi, {username || "User"}
+                                        </span>
+                                        <Link
+                                            to="/user/information"
+                                            className="font-semibold text-indigo-600"
+                                        >
+                                            Profile
+                                        </Link>
+                                        <button
+                                            onClick={handleLogout}
+                                            className="font-semibold text-red-600"
+                                        >
+                                            Logout
+                                        </button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Link to="/signup" className="font-semibold text-indigo-600">
+                                            Signup
+                                        </Link>
+                                        <Link to="/login" className="font-semibold text-indigo-600">
+                                            Log in
+                                        </Link>
+                                    </>
+                                )}
                             </div>
                         </div>
                     </DialogPanel>
                 </Dialog>
             </header>
 
-            <section className="relative isolate flex h-[70vh] items-center justify-center overflow-hidden bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 px-4 pt-20 text-center text-white">
+            <section
+                className="relative isolate flex h-[70vh] items-center justify-center overflow-hidden bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 px-4 pt-20 text-center text-white">
                 <div className="z-10 flex flex-col items-center gap-6 max-w-2xl">
                     <h1 className="text-3xl font-extrabold leading-tight sm:text-5xl md:text-6xl">
                         Trải nghiệm mua hàng <span className="inline-block bg-white/20 px-2">không giới hạn</span>
                     </h1>
                     <p className="text-sm sm:text-lg md:text-xl">
-                        Mua sắm mọi lúc, mọi nơi, mọi thiết bị với ShopSmart – nền tảng thương mại điện tử tối ưu cho bạn.
+                        Mua sắm mọi lúc, mọi nơi, mọi thiết bị với ShopSmart – nền tảng thương mại điện tử tối ưu cho
+                        bạn.
                     </p>
                     <div className="flex flex-wrap items-center justify-center gap-4">
                         <Link
@@ -327,11 +367,10 @@ export default function Home() {
                             href="#flash-sale"
                             className="flex items-center gap-1 text-sm font-semibold hover:underline"
                         >
-                            Khám phá thêm <ChevronRightIcon className="h-4 w-4" />
+                            Khám phá thêm <ChevronRightIcon className="h-4 w-4"/>
                         </a>
                     </div>
                 </div>
-
                 <div
                     aria-hidden
                     className="absolute -left-20 -top-20 h-80 w-80 rounded-full bg-white/10 blur-3xl"
@@ -362,9 +401,10 @@ export default function Home() {
                         },
                     ].map((item) => (
                         <div key={item.title} className="flex flex-col items-center text-center">
-              <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-indigo-50 p-3 ring-4 ring-indigo-100">
-                <img src={item.icon} alt="icon" className="h-8 w-8" />
-              </span>
+                <span
+                    className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-indigo-50 p-3 ring-4 ring-indigo-100">
+                    <img src={item.icon} alt="icon" className="h-8 w-8"/>
+                </span>
                             <h3 className="mb-2 text-lg font-extrabold text-gray-800 md:text-2xl">
                                 {item.title}
                             </h3>
@@ -376,17 +416,16 @@ export default function Home() {
                 </div>
             </section>
 
-            <ImageSlider />
+            <ImageSlider/>
 
             <section className="mx-auto mt-8 max-w-7xl px-4">
                 <div className="grid grid-cols-3 gap-4 sm:grid-cols-6">
                     {categories.map((cat) => (
-                        <InterfaceProduct key={cat.name} name={cat.name} src={cat.src} />
+                        <InterfaceProduct key={cat.name} name={cat.name} src={cat.src}/>
                     ))}
                 </div>
             </section>
 
-            {/* Flash Sale dưới danh mục */}
             <section className="mx-auto mt-8 max-w-7xl px-4">
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="text-xl font-extrabold md:text-2xl">
@@ -396,13 +435,13 @@ export default function Home() {
                         href="#flash-sale"
                         className="flex items-center gap-1 text-sm font-semibold text-indigo-600 hover:underline"
                     >
-                        Xem thêm <ChevronRightIcon className="h-4 w-4" />
+                        Xem thêm <ChevronRightIcon className="h-4 w-4"/>
                     </a>
                 </div>
-                <CountdownTimer endTime={endTime} />
+                <CountdownTimer endTime={endTime}/>
                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-3">
                     {flashSaleProducts.map((product) => (
-                        <FlashSaleCard key={product.ID} product={product} />
+                        <FlashSaleCard key={product.ID} product={product}/>
                     ))}
                 </div>
             </section>
@@ -412,15 +451,15 @@ export default function Home() {
                     <h2 className="mb-4 text-2xl font-extrabold md:text-3xl">
                         Chỉ trong hôm nay – Nhanh tay mua sắm!
                     </h2>
-                    <CountdownTimer endTime={endTime} />
+                    <CountdownTimer endTime={endTime}/>
                     {error && (
                         <p className="text-center text-red-500">{error}</p>
                     )}
                     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
                         {loading
-                            ? Array.from({ length: 10 }).map((_, i) => <SkeletonCard key={i} />)
+                            ? Array.from({length: 10}).map((_, i) => <SkeletonCard key={i}/>)
                             : products.map((product) => (
-                                <FlashSaleCard key={product.ID} product={product} />
+                                <FlashSaleCard key={product.ID} product={product}/>
                             ))}
                     </div>
                 </div>
@@ -429,7 +468,7 @@ export default function Home() {
             <footer className="border-t bg-gray-50 py-10">
                 <div className="mx-auto flex max-w-7xl flex-col items-center gap-6 px-4 md:flex-row md:justify-between">
                     <Link to="/" className="flex items-center gap-2 font-bold">
-                        <img src="/logo.png" alt="logo" className="h-8 w-auto" /> ShopSmart
+                        <img src="/logo.png" alt="logo" className="h-8 w-auto"/> BPSTORE
                     </Link>
                     <ul className="flex flex-wrap items-center justify-center gap-4 text-sm text-gray-600">
                         <li>
@@ -454,8 +493,8 @@ export default function Home() {
                         </li>
                     </ul>
                     <span className="text-xs text-gray-400">
-            © {new Date().getFullYear()} ShopSmart. All rights reserved.
-          </span>
+                        © {new Date().getFullYear()} BPSTORE. All rights reserved.
+                    </span>
                 </div>
             </footer>
         </div>
