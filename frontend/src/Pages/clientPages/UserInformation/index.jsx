@@ -235,6 +235,11 @@ const UserProfile = () => {
       }
     };
 
+    // Hàm lọc tùy chọn cho tìm kiếm
+    const filterOption = (input, option) => {
+      return option.children.toLowerCase().includes(input.toLowerCase());
+    };
+
     return (
         <div className="flex-1 p-6">
           <Card
@@ -386,12 +391,14 @@ const UserProfile = () => {
 
                   <Form.Item label="Tỉnh/Thành phố">
                     <Select
-                        placeholder="Chọn tỉnh"
+                        placeholder="Chọn hoặc tìm tỉnh"
                         loading={loadingProvinces}
                         value={formData.province}
                         onChange={value => setFormData(prev => ({ ...prev, province: value }))}
                         size="large"
                         allowClear
+                        showSearch
+                        filterOption={filterOption}
                         notFoundContent={loadingProvinces ? <Spin size="small" /> : null}
                     >
                       {provinces.map(p => (
@@ -404,13 +411,15 @@ const UserProfile = () => {
 
                   <Form.Item label="Quận/Huyện">
                     <Select
-                        placeholder="Chọn quận"
+                        placeholder="Chọn hoặc tìm quận"
                         loading={loadingDistricts}
                         disabled={!formData.province}
                         value={formData.district}
                         onChange={value => setFormData(prev => ({ ...prev, district: value }))}
                         size="large"
                         allowClear
+                        showSearch
+                        filterOption={filterOption}
                         notFoundContent={loadingDistricts ? <Spin size="small" /> : null}
                     >
                       {districts.map(d => (
@@ -423,13 +432,15 @@ const UserProfile = () => {
 
                   <Form.Item label="Phường/Xã">
                     <Select
-                        placeholder="Chọn phường"
+                        placeholder="Chọn hoặc tìm phường"
                         loading={loadingWards}
                         disabled={!formData.district}
                         value={formData.ward}
                         onChange={value => setFormData(prev => ({ ...prev, ward: value }))}
                         size="large"
                         allowClear
+                        showSearch
+                        filterOption={filterOption}
                         notFoundContent={loadingWards ? <Spin size="small" /> : null}
                     >
                       {wards.map(w => (
