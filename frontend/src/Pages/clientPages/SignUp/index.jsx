@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";    
-import axios from "axios"
+import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import config from "../../../config";
+
 export default function SignUp() {
-    // State cho tất cả các trường
+    // State for form fields
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [address, setAddress] = useState("");
@@ -14,15 +14,14 @@ export default function SignUp() {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [country, setCountry] = useState("");
     const [gender, setGender] = useState("");
-    const [birthday, setBirthday] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
 
-    // Danh sách các quốc gia
+    // Country list with "Việt Nam"
     const countries = [
-        "Vietnam",
+        "Việt Nam",
         "United States",
         "United Kingdom",
         "Canada",
@@ -34,74 +33,55 @@ export default function SignUp() {
         "Malaysia"
     ];
 
-    // Hàm xử lý đăng ký
+    // Handle signup submission
     const handleSignUp = async (e) => {
         e.preventDefault();
-        
-        // Kiểm tra mật khẩu nhập lại có khớp không
+
+        // Validate required fields
+        if (!name || !email || !address || !phone || !password || !confirmPassword || !country || !gender) {
+            setError("Please fill in all fields");
+            return;
+        }
+
+        // Check if passwords match
         if (password !== confirmPassword) {
             setError("Passwords don't match");
             return;
         }
 
-        if (!name || !email || !address || !phone || !password || !country || !gender || !birthday) {
-            setError("Please fill in all fields");
-            return;
-        }
-
-        const birthDate = new Date(birthday);
-        if (isNaN(birthDate.getTime())) {
-            setError("Invalid birthday date");
-            return;
-        }
-
-        // Kiểm tra ngày sinh không được trong tương lai
-        const today = new Date();
-        if (birthDate > today) {
-            setError("Birthday cannot be in the future");
-            return;
-        }
-
-        const API_URL = config.apiUrl + "/api/v1/auth/register"
+        const API_URL = config.apiUrl + "/api/v1/auth/register";
 
         try {
             setLoading(true);
             setError("");
 
-            // send request to server
+            // Send request to server with specified payload
             const response = await fetch(API_URL, {
-                method: 'GET',
+                method: 'POST',
                 headers: {
-                  'Content-Type': 'application/json',
-                  'ngrok-skip-browser-warning': 'true' 
+                    'Content-Type': 'application/json',
+                    'ngrok-skip-browser-warning': 'true'
                 },
-                body: JSON.stringify({name, email, address, phone, password, country, gender, birthday})
-              });
+                body: JSON.stringify({ name, email, password, phone, address, gender, country })
+            });
 
-            
             console.log("Registration response:", response);
 
             if (response.status === 200 || response.status === 201) {
-                // Đăng ký thành công
                 alert("Registration successful! Please login.");
-                // Chuyển hướng đến trang đăng nhập
                 navigate("/login");
             } else {
-                // Xử lý các trạng thái response khác
-                setError("Registration failed. Please try again.");
+                const data = await response.json();
+                setError(`Registration failed: ${data.message || 'Please try again.'}`);
             }
         } catch (error) {
             console.error("Registration error:", error);
-            
-            // Xử lý lỗi chi tiết
+
             if (error.response) {
-                // Lỗi từ server với status code
                 setError(`Registration failed: ${error.response.data.message || error.response.statusText}`);
             } else if (error.request) {
-                // Không nhận được response từ server
                 setError("Registration failed: No response from server. Please try again later.");
             } else {
-                // Lỗi khi thiết lập request
                 setError("Registration failed: " + error.message);
             }
         } finally {
@@ -111,7 +91,7 @@ export default function SignUp() {
 
     return(
         <div className="min-h-screen bg-gradient-to-br from-violet-100 to-pink-100 flex items-center justify-center p-4">
-            <motion.div 
+            <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
@@ -143,7 +123,7 @@ export default function SignUp() {
                             {/* Name field */}
                             <div className='flex flex-col'>
                                 <label className='text-lg font-medium text-gray-700'>Full Name</label>
-                                <input 
+                                <input
                                     className='w-full border-2 border-gray-200 rounded-xl p-4 mt-1 bg-transparent focus:border-violet-500 focus:ring-2 focus:ring-violet-200 transition-all duration-200'
                                     placeholder="Enter your full name"
                                     value={name}
@@ -154,7 +134,7 @@ export default function SignUp() {
                             {/* Email field */}
                             <div className='flex flex-col'>
                                 <label className='text-lg font-medium text-gray-700'>Email</label>
-                                <input 
+                                <input
                                     className='w-full border-2 border-gray-200 rounded-xl p-4 mt-1 bg-transparent focus:border-violet-500 focus:ring-2 focus:ring-violet-200 transition-all duration-200'
                                     placeholder="Enter your email"
                                     type="email"
@@ -166,7 +146,7 @@ export default function SignUp() {
                             {/* Address field */}
                             <div className='flex flex-col'>
                                 <label className='text-lg font-medium text-gray-700'>Address</label>
-                                <input 
+                                <input
                                     className='w-full border-2 border-gray-200 rounded-xl p-4 mt-1 bg-transparent focus:border-violet-500 focus:ring-2 focus:ring-violet-200 transition-all duration-200'
                                     placeholder="Enter your address"
                                     value={address}
@@ -177,7 +157,7 @@ export default function SignUp() {
                             {/* Phone field */}
                             <div className='flex flex-col'>
                                 <label className='text-lg font-medium text-gray-700'>Phone Number</label>
-                                <input 
+                                <input
                                     className='w-full border-2 border-gray-200 rounded-xl p-4 mt-1 bg-transparent focus:border-violet-500 focus:ring-2 focus:ring-violet-200 transition-all duration-200'
                                     placeholder="Enter your phone number"
                                     value={phone}
@@ -188,7 +168,7 @@ export default function SignUp() {
                             {/* Country field */}
                             <div className='flex flex-col'>
                                 <label className='text-lg font-medium text-gray-700'>Country</label>
-                                <select 
+                                <select
                                     className='w-full border-2 border-gray-200 rounded-xl p-4 mt-1 bg-transparent focus:border-violet-500 focus:ring-2 focus:ring-violet-200 transition-all duration-200'
                                     value={country}
                                     onChange={(e) => setCountry(e.target.value)}
@@ -208,7 +188,7 @@ export default function SignUp() {
                                 <div className='flex gap-6 mt-2'>
                                     {['male', 'female', 'other'].map((option) => (
                                         <label key={option} className='flex items-center space-x-2 cursor-pointer'>
-                                            <input 
+                                            <input
                                                 type="radio"
                                                 name="gender"
                                                 value={option}
@@ -222,21 +202,10 @@ export default function SignUp() {
                                 </div>
                             </div>
 
-                            {/* Birthday field */}
-                            <div className='flex flex-col'>
-                                <label className='text-lg font-medium text-gray-700'>Birthday</label>
-                                <input 
-                                    type="date"
-                                    className='w-full border-2 border-gray-200 rounded-xl p-4 mt-1 bg-transparent focus:border-violet-500 focus:ring-2 focus:ring-violet-200 transition-all duration-200'
-                                    value={birthday}
-                                    onChange={(e) => setBirthday(e.target.value)}
-                                />
-                            </div>
-
-                            {/* Password fields */}
+                            {/* Password field */}
                             <div className='flex flex-col'>
                                 <label className='text-lg font-medium text-gray-700'>Password</label>
-                                <input 
+                                <input
                                     className='w-full border-2 border-gray-200 rounded-xl p-4 mt-1 bg-transparent focus:border-violet-500 focus:ring-2 focus:ring-violet-200 transition-all duration-200'
                                     placeholder="Enter your password"
                                     type="password"
@@ -245,9 +214,10 @@ export default function SignUp() {
                                 />
                             </div>
 
+                            {/* Confirm Password field */}
                             <div className='flex flex-col'>
                                 <label className='text-lg font-medium text-gray-700'>Confirm Password</label>
-                                <input 
+                                <input
                                     className='w-full border-2 border-gray-200 rounded-xl p-4 mt-1 bg-transparent focus:border-violet-500 focus:ring-2 focus:ring-violet-200 transition-all duration-200'
                                     placeholder="Confirm your password"
                                     type="password"
@@ -259,7 +229,7 @@ export default function SignUp() {
 
                         {/* Error message */}
                         {error && (
-                            <motion.div 
+                            <motion.div
                                 initial={{ opacity: 0, y: -10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 className='p-4 bg-red-50 border border-red-200 text-red-600 rounded-xl'
@@ -269,13 +239,13 @@ export default function SignUp() {
                         )}
 
                         {/* Buttons */}
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.4 }}
                             className='space-y-4'
                         >
-                            <button 
+                            <button
                                 className='w-full py-4 bg-gradient-to-r from-violet-600 to-pink-600 text-white font-bold text-lg rounded-xl hover:from-violet-700 hover:to-pink-700 transform hover:scale-[1.02] transition-all duration-200 shadow-lg'
                                 onClick={handleSignUp}
                                 disabled={loading}
@@ -303,7 +273,7 @@ export default function SignUp() {
                         </motion.div>
 
                         {/* Login link */}
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.5 }}
@@ -337,7 +307,7 @@ export default function SignUp() {
                             transition={{ delay: 0.2 }}
                             className="text-3xl font-bold mb-4"
                         >
-                            Welcome to Our Community
+                            Welcome to BPSTORE SVIP
                         </motion.h2>
                         <motion.p
                             initial={{ y: 20, opacity: 0 }}
