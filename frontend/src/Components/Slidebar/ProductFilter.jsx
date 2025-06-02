@@ -1,19 +1,38 @@
 import React, { useEffect, useMemo, useState } from "react";
+import config from "../../config";
 
+const CATEGORY_API_URL = config.apiUrl + "/api/v1/products/category";
 
 export default function ProductFilter({ products = [], onFilterChange }) {
-
     const [price, setPrice] = useState({ min: "", max: "" });
-    const [rating, setRating] = useState(0); // 0‑5
+    const [rating, setRating] = useState(0); // 0-5
+    const [categories, setCategories] = useState([]); // State để lưu danh sách danh mục
+    const [selectedCategories, setSelectedCategories] = useState({}); // State để lưu trạng thái chọn danh mục
 
+    // Ánh xạ tên danh mục thân thiện với người dùng
+    const categoryMapping = {
+        "dien-thoai-may-tinh-bang": "Điện Thoại & Máy Tính Bảng",
+        "nha-cua-doi-song": "Nhà Cửa & Đời Sống",
+        "do-choi-me-be": "Đồ Chơi & Mẹ Bé",
+        "thiet-bi-kts-phu-kien-so": "Thiết Bị KTS & Phụ Kiện Số",
+        "dien-gia-dung": "Điện Gia Dụng",
+        "lam-dep-suc-khoe": "Làm Đẹp & Sức Khỏe",
+        "o-to-xe-may-xe-dap": "Ô Tô, Xe Máy & Xe Đạp",
+        "thoi-trang-nu": "Thời Trang Nữ",
+        "laptop-may-vi-tinh-linh-kien": "Laptop & Linh Kiện",
+        "giay-dep-nam": "Giày Dép Nam",
+        "thoi-trang-nam": "Thời Trang Nam",
+        "giay-dep-nu": "Giày Dép Nữ",
+    };
+
+    // Lấy danh sách thương hiệu
     const brandList = useMemo(() => {
         const brands = new Set(products.map((p) => p.Brand).filter(Boolean));
         return Array.from(brands).sort();
     }, [products]);
 
-
     const [brand, setBrand] = useState({});
-    /* Sync brand state when product list changes */
+    // Sync brand state when product list changes
     useEffect(() => {
         setBrand((prev) => {
             const next = {};
@@ -24,23 +43,86 @@ export default function ProductFilter({ products = [], onFilterChange }) {
         });
     }, [brandList]);
 
+    // Sync selectedCategories state when category list changes
+    useEffect(() => {
+        setSelectedCategories((prev) => {
+            const next = {};
+            categories.forEach((cat) => {
+                next[cat] = prev[cat] ?? false;
+            });
+            return next;
+        });
+    }, [categories]);
+
     const [promo, setPromo] = useState({ sale: false, inStock: false });
 
+    // Gọi API để lấy danh sách danh mục
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await fetch(CATEGORY_API_URL, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "ngrok-skip-browser-warning": "true",
+                    },
+                });
 
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                if (data && data.categories) {
+                    setCategories(data.categories); // Lưu danh sách danh mục
+                } else {
+                    throw new Error("Invalid category data structure received from API");
+                }
+            } catch (err) {
+                console.error("Error fetching categories:", err);
+            }
+        };
+
+        fetchCategories();
+    }, []);
+
+    // Gửi dữ liệu lọc lên component cha
     useEffect(() => {
         if (typeof onFilterChange === "function") {
-            onFilterChange({ price, rating, brand, promo });
+            // Lấy danh mục duy nhất được chọn (chỉ lấy danh mục đầu tiên nếu nhiều hơn một được chọn)
+            const selectedCategory = Object.keys(selectedCategories).find(
+                (cat) => selectedCategories[cat]
+            );
+            onFilterChange({
+                price,
+                rating,
+                brand,
+                promo,
+                category: selectedCategory, // Gửi danh mục được chọn
+            });
         }
-    }, [price, rating, brand, promo, onFilterChange]);
-
+    }, [price, rating, brand, promo, selectedCategories, onFilterChange]);
 
     const handleCheckbox = (setter, key) => ({ target }) =>
-        setter((prev) => ({ ...prev, [key]: target.checked }));
+        setter((prev) => {
+            // Chỉ cho phép chọn một danh mục duy nhất
+            if (setter === setSelectedCategories) {
+                const next = {};
+                Object.keys(prev).forEach((k) => {
+                    next[k] = k === key ? target.checked : false;
+                });
+                return next;
+            }
+            return { ...prev, [key]: target.checked };
+        });
 
     const resetAll = () => {
         setPrice({ min: "", max: "" });
         setRating(0);
         setBrand((prev) => Object.fromEntries(Object.keys(prev).map((k) => [k, false])));
+        setSelectedCategories((prev) =>
+            Object.fromEntries(Object.keys(prev).map((k) => [k, false]))
+        );
         setPromo({ sale: false, inStock: false });
     };
 
@@ -64,7 +146,6 @@ export default function ProductFilter({ products = [], onFilterChange }) {
             <span>{label}</span>
         </label>
     );
-
 
     return (
         <aside className="flex w-64 flex-col gap-6 overflow-y-auto bg-gray-50 p-4">
@@ -117,6 +198,22 @@ export default function ProductFilter({ products = [], onFilterChange }) {
                     </label>
                 ))}
             </Section>
+
+            {/* Category */}
+            {categories.length > 0 && (
+                <Section title="Danh mục">
+                    <div className="space-y-1">
+                        {categories.map((cat) => (
+                            <Checkbox
+                                key={cat}
+                                label={categoryMapping[cat] || cat}
+                                checked={selectedCategories[cat] ?? false}
+                                onChange={handleCheckbox(setSelectedCategories, cat)}
+                            />
+                        ))}
+                    </div>
+                </Section>
+            )}
 
             {/* Brand */}
             {brandList.length > 0 && (

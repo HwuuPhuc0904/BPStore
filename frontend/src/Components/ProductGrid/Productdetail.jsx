@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Button, Image, Spin, InputNumber } from 'antd';
-import config from "../../config";
+import { Button, Image, Spin, InputNumber, message } from 'antd';
+import config from '../../config';
 
 function ProductDetail() {
     const { productId } = useParams();
@@ -12,160 +12,190 @@ function ProductDetail() {
     const [quantity, setQuantity] = useState(1);
     const [subtotal, setSubtotal] = useState(0);
     const [showFullDescription, setShowFullDescription] = useState(false);
-    const [similarProducts, setSimilarProducts] = useState([]); // State cho sản phẩm tương tự
+    const [similarProducts, setSimilarProducts] = useState([]);
 
     const stripHtmlTags = (str) => {
         if (!str) return str;
-        return str.replace(/<\/?p>/g, '');
+        return str.replace(/<\/?[^>]+(>|$)/g, '');
+    };
+
+    const extractColorsFromText = (text) => {
+        if (!text) return [];
+        const colorKeywords = ['Đỏ', 'Xanh', 'Đen', 'Trắng', 'Vàng', 'Xám', 'Nâu', 'Hồng', 'Tím', 'Cam', 'Bạc', 'Vàng ánh kim', 'Xanh lam', 'Xanh lá'];
+        const regex = new RegExp(`\\b(${colorKeywords.join('|')})\\b`, 'gi');
+        const matches = text.match(regex) || [];
+        return [...new Set(matches)];
     };
 
     useEffect(() => {
-        const fetchProduct = async () => {
+        const fetchProductAndSimilar = async () => {
             setLoading(true);
             try {
-                const response = await fetch(`${config.apiUrl}/api/v1/products/${productId}`, {
+                const productResponse = await fetch(`${config.apiUrl}/api/v1/products/${productId}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
                         'ngrok-skip-browser-warning': 'true',
                     },
                 });
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
+                if (!productResponse.ok) {
+                    throw new Error(`HTTP error! Status: ${productResponse.status}`);
                 }
-                const data = await response.json();
-                if (!data.product) throw new Error('Không tìm thấy sản phẩm');
-                setProduct(data.product);
-                const firstImage = data.product.ImagesURL.split('|')[0];
-                setMainImage(firstImage || 'https://via.placeholder.com/400');
-                setSubtotal(data.product.Price || 0);
-                // Dữ liệu mẫu tĩnh cho sản phẩm tương tự (sẽ được thay bằng API sau)
-                setSimilarProducts([
+                const productData = await productResponse.json();
+                if (!productData || !productData.product) {
+                    throw new Error('Dữ liệu phản hồi không chứa thông tin sản phẩm');
+                }
+
+                let specs = {};
+                try {
+                    specs = productData.product.SpecificationsFull
+                        ? JSON.parse(productData.product.SpecificationsFull)
+                        : { Content: {}, Operation: {} };
+                } catch (parseError) {
+                    console.error('Error parsing SpecificationsFull:', parseError);
+                    specs = { Content: {}, Operation: {} };
+                }
+
+                setProduct({ ...productData.product, SpecificationsFull: specs });
+                const firstImage = productData.product.ImagesURL ? productData.product.ImagesURL.split('|')[0] : null;
+                setMainImage(firstImage || productData.product.MainImage || 'https://via.placeholder.com/400');
+                setSubtotal(productData.product.Price || 0);
+                setQuantity(1); // Đặt số lượng mặc định là 1 khi dữ liệu sản phẩm được tải
+
+                const similarResponse = await fetch(
+                    `${config.apiUrl}/api/v1/products?category=${productData.product.Categories}&limit=4`,
                     {
-                        Name: "Điện Thoai Samsung Galaxy A06 (4GB/128GB)",
-                        Price: 2250000,
-                        RatingAverage: 4.8,
-                        ReviewCount: 15,
-                        ImagesURL: "https://via.placeholder.com/150",
-                        SpecificationsFull: JSON.stringify({
-                            Content: {
-                                storage: { name: "ROM", value: "128GB" },
-                                ram: { name: "RAM", value: "4GB" },
-                                gpu: { name: "GPU", value: "Mali-G52" },
-                                chipset: { name: "Chipset", value: "MediaTek Helio G85" },
-                                display_technology: { name: "Công nghệ màn hình", value: "PLS LCD" },
-                                cpu_speed: { name: "Tốc độ CPU", value: "2 nhân 2.0 GHz & 6 nhân 1.8 GHz" },
-                            },
-                        }),
-                        Seller: "Tiki Trading",
-                    },
-                    {
-                        Name: "Điện Thoai Samsung A36 5G (8GB/128GB)",
-                        Price: 6937000,
-                        RatingAverage: 5.0,
-                        ReviewCount: 1,
-                        ImagesURL: "https://via.placeholder.com/150",
-                        SpecificationsFull: JSON.stringify({
-                            Content: {
-                                storage: { name: "ROM", value: "128GB" },
-                                ram: { name: "RAM", value: "8GB" },
-                                gpu: { name: "GPU", value: "Adreno 710" },
-                                chipset: { name: "Chipset", value: "Snapdragon 6 Gen 3 8 nhán" },
-                                display_technology: { name: "Công nghệ màn hình", value: "Super AMOLED" },
-                                cpu_speed: { name: "Tốc độ CPU", value: "2.4 GHz" },
-                            },
-                        }),
-                        Seller: "Hồng Hạnh Mobile",
-                    },
-                    {
-                        Name: "Điện Thoai Samsung Galaxy A03",
-                        Price: 6050000,
-                        RatingAverage: 5.0,
-                        ReviewCount: 1,
-                        ImagesURL: "https://via.placeholder.com/150",
-                        SpecificationsFull: JSON.stringify({
-                            Content: {
-                                storage: { name: "ROM", value: "128GB" },
-                                ram: { name: "RAM", value: "8GB" },
-                                gpu: { name: "GPU", value: "Mali-G68" },
-                                chipset: { name: "Chipset", value: "Exynos 1380 (5nm)" },
-                                display_technology: { name: "Công nghệ màn hình", value: "Super AMOLED" },
-                                cpu_speed: { name: "Tốc độ CPU", value: "2.4GHz, 2GHz, ..." },
-                            },
-                        }),
-                        Seller: "Tiki Trading",
-                    },
-                ]);
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'ngrok-skip-browser-warning': 'true',
+                        },
+                    }
+                );
+                if (!similarResponse.ok) {
+                    throw new Error(`HTTP error! Status: ${similarResponse.status}`);
+                }
+                const similarData = await similarResponse.json();
+                setSimilarProducts(similarData.products || []);
             } catch (error) {
-                console.error('Error fetching product:', error);
+                console.error('Error fetching product or similar products:', error);
                 setError(error.message);
             } finally {
                 setLoading(false);
             }
         };
-        fetchProduct();
+        fetchProductAndSimilar();
     }, [productId]);
 
     useEffect(() => {
         if (product) {
-            const newSubtotal = quantity * product.Price;
+            const newSubtotal = quantity * (product.Price || 0);
             setSubtotal(newSubtotal);
+            // Kiểm tra nếu số lượng vượt quá Stock, hiển thị thông báo và điều chỉnh
+            if (quantity > (product.Stock || 0)) {
+                message.warning(`Số lượng vượt quá tồn kho (${product.Stock} sản phẩm). Vui lòng chọn lại!`);
+                setQuantity(product.Stock || 1);
+            }
         }
     }, [quantity, product]);
+
+    const handleAddToCart = () => {
+        if (!product) return;
+        if (product.Stock === 0) {
+            message.error('Sản phẩm đã hết hàng!');
+            return;
+        }
+        if (quantity > product.Stock) {
+            message.error(`Số lượng vượt quá tồn kho (${product.Stock} sản phẩm). Vui lòng chọn lại!`);
+            setQuantity(product.Stock);
+            return;
+        }
+        message.success(`Đã thêm ${quantity} sản phẩm vào giỏ hàng!`);
+        // Logic thêm vào giỏ hàng ở đây (gửi API hoặc lưu vào state)
+    };
 
     if (error) return <div className="text-center py-10">Lỗi: {error}</div>;
     if (loading) return <div className="flex justify-center items-center h-screen"><Spin /></div>;
     if (!product) return <div className="text-center py-10">Không tìm thấy sản phẩm</div>;
 
-    const specs = JSON.parse(product.SpecificationsFull);
-    const colors = ['Xanh Bạc', 'Xanh Ngọc', 'Đen tuyền'];
-    const capacities = ['4GB/64GB'];
+    const specs = product.SpecificationsFull;
+    const colorsFromSpecs = specs?.Content?.filter_color?.value ? specs.Content.filter_color.value.split(',') : [];
+    const colorsFromName = extractColorsFromText(product.Name);
+    const colorsFromDescription = extractColorsFromText(stripHtmlTags(product.Description));
+    const productColors = [...new Set([...colorsFromSpecs, ...colorsFromName, ...colorsFromDescription])];
+    const productCapacities = specs?.Content?.capacity?.value ? specs.Content.capacity.value.split(',') : [];
+    const productSizes = specs?.Content?.filter_ncds_kichthuoc_noichaoam?.value ? specs.Content.filter_ncds_kichthuoc_noichaoam.value.split(',') : [];
+    const productWeight = specs?.Content?.product_weight_mb?.value || '';
+
+    const isAddToCartDisabled = product.Stock === 0 || quantity > product.Stock;
 
     return (
         <div className="container mx-auto my-10 px-4">
-            {/* Top Section: Image and Product Details */}
+            <style>
+                {`
+                    .product-image-container {
+                        max-height: 150px;
+                        overflow: hidden;
+                    }
+                    .ant-image-img {
+                        max-height: 150px !important;
+                        object-fit: cover !important;
+                        width: 100% !important;
+                    }
+                `}
+            </style>
             <div className="flex flex-col md:flex-row gap-10">
-                {/* Left Image */}
                 <div className="flex-1 bg-white p-6 rounded shadow">
                     <Image
                         src={mainImage}
-                        alt={product.Name}
+                        alt={product.Name || 'Sản phẩm'}
                         width={'100%'}
                         height={400}
-                        style={{ objectFit: 'cover' }}
+                        style={{objectFit: 'cover'}}
                     />
                     <div className="flex gap-3 justify-center mt-4">
-                        {product.ImagesURL.split('|').map((img, idx) => (
-                            <Image
-                                key={idx}
-                                src={img}
-                                width={60}
-                                height={60}
-                                style={{
-                                    border: mainImage === img ? '2px solid #1677ff' : '1px solid #eee',
-                                    cursor: 'pointer',
-                                    borderRadius: 4,
-                                }}
-                                onMouseEnter={() => setMainImage(img)}
-                                preview={false}
-                            />
-                        ))}
+                        {product.ImagesURL && product.ImagesURL.split('|').length > 0 ? (
+                            product.ImagesURL.split('|').map((img, idx) => (
+                                <Image
+                                    key={idx}
+                                    src={img || 'https://via.placeholder.com/60'}
+                                    width={60}
+                                    height={60}
+                                    style={{
+                                        border: mainImage === img ? '2px solid #1677ff' : '1px solid #eee',
+                                        cursor: 'pointer',
+                                        borderRadius: 4,
+                                    }}
+                                    onMouseEnter={() => setMainImage(img)}
+                                    preview={false}
+                                />
+                            ))
+                        ) : (
+                            <p className="text-gray-500">Không có hình ảnh thu nhỏ</p>
+                        )}
                     </div>
                 </div>
 
-                {/* Right Content */}
                 <div className="flex-1 bg-white p-6 rounded shadow">
-                    <h2 className="text-2xl font-bold">{product.Name}</h2>
-                    <p className="text-gray-500 mt-1">Thương hiệu: {product.Brand}</p>
+                    <h2 className="text-2xl font-bold">{product.Name || 'Không có tên sản phẩm'}</h2>
+                    <p className="text-gray-500 mt-1">Thương hiệu: {product.Brand || 'Không có thông tin'}</p>
                     <div className="mt-4 flex items-center">
                         <span className="text-xl font-bold text-red-500 mr-2">
-            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.Price)}
-        </span>
-                        {product.Price !== product.OriginalPrice && (
+                            {product.Price
+                                ? new Intl.NumberFormat('vi-VN', {
+                                    style: 'currency',
+                                    currency: 'VND'
+                                }).format(product.Price)
+                                : 'Không có giá'}
+                        </span>
+                        {product.OriginalPrice && product.Price !== product.OriginalPrice && (
                             <>
-                <span className="text-gray-500 line-through text-sm">
-                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.OriginalPrice)}
-                </span>
+                                <span className="text-gray-500 line-through text-sm">
+                                    {new Intl.NumberFormat('vi-VN', {
+                                        style: 'currency',
+                                        currency: 'VND'
+                                    }).format(product.OriginalPrice)}
+                                </span>
                                 {product.DiscountPercent > 0 && (
                                     <span className="text-red-500 text-sm ml-2">(-{product.DiscountPercent}%)</span>
                                 )}
@@ -173,57 +203,107 @@ function ProductDetail() {
                         )}
                     </div>
                     <div className="mt-2 flex items-center">
-                        <span className="text-yellow-500 mr-1">{Array(Math.round(product.RatingAverage)).fill('★').join('')}</span>
-                        <span className="text-gray-600">({product.ReviewCount} đánh giá)</span>
+                        <span className="text-yellow-500 mr-1">
+                            {product.RatingAverage ? Array(Math.round(product.RatingAverage)).fill('★').join('') : 'Chưa có đánh giá'}
+                        </span>
+                        <span className="text-gray-600">({product.ReviewCount || 0} đánh giá)</span>
                         <span className="text-gray-600 ml-2">Đã bán {product.OrderCount || 0}</span>
                     </div>
 
                     <div className="mt-5">
                         <p className="font-semibold mb-1">Màu sắc:</p>
                         <div className="flex flex-wrap gap-2">
-                            {colors.map((color, i) => (
-                                <Button
-                                    key={i}
-                                    type="default"
-                                    style={{ backgroundColor: i === 0 ? '#e0f7fa' : i === 1 ? '#b2dfdb' : '#212121', color: 'black' }}
-                                >
-                                    {color}
-                                </Button>
-                            ))}
+                            {productColors.length > 0 ? (
+                                productColors.map((color, i) => (
+                                    <Button
+                                        key={i}
+                                        type="default"
+                                        style={{backgroundColor: '#e0f7fa', color: 'black'}}
+                                    >
+                                        {color.trim()}
+                                    </Button>
+                                ))
+                            ) : (
+                                <p className="text-gray-500 text-sm">Không có thông tin màu sắc</p>
+                            )}
                         </div>
                     </div>
 
-                    <div className="mt-5">
-                        <p className="font-semibold mb-1">Dung lượng:</p>
-                        <div className="flex flex-wrap gap-2">
-                            {capacities.map((capacity, i) => (
-                                <Button
-                                    key={i}
-                                    type="default"
-                                    style={{ backgroundColor: '#e0f7fa', color: 'black' }}
-                                >
-                                    {capacity}
-                                </Button>
-                            ))}
+                    {productCapacities.length > 0 && (
+                        <div className="mt-5">
+                            <p className="font-semibold mb-1">Dung lượng:</p>
+                            <div className="flex flex-wrap gap-2">
+                                {productCapacities.map((capacity, i) => (
+                                    <Button
+                                        key={i}
+                                        type="default"
+                                        style={{backgroundColor: '#e0f7fa', color: 'black'}}
+                                    >
+                                        {capacity.trim()}
+                                    </Button>
+                                ))}
+                            </div>
                         </div>
-                    </div>
+                    )}
+
+                    {productSizes.length > 0 && (
+                        <div className="mt-5">
+                            <p className="font-semibold mb-1">Kích thước:</p>
+                            <div className="flex flex-wrap gap-2">
+                                {productSizes.map((size, i) => (
+                                    <Button
+                                        key={i}
+                                        type="default"
+                                        style={{backgroundColor: '#e0f7fa', color: 'black'}}
+                                    >
+                                        {size.trim()}
+                                    </Button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {productWeight && (
+                        <div className="mt-5">
+                            <p className="font-semibold mb-1">Khối lượng:</p>
+                            <div className="flex flex-wrap gap-2">
+                                <Button
+                                    type="default"
+                                    style={{backgroundColor: '#e0f7fa', color: 'black'}}
+                                >
+                                    {productWeight} kg
+                                </Button>
+                            </div>
+                        </div>
+                    )}
 
                     <div className="mt-5 flex items-center gap-2">
                         <span className="font-semibold">Số lượng:</span>
-                        <Button onClick={() => setQuantity(quantity > 1 ? quantity - 1 : 1)}>-</Button>
+                        <Button
+                            onClick={() => setQuantity(quantity > 1 ? quantity - 1 : 1)}
+                            disabled={quantity <= 1}
+                        >
+                            -
+                        </Button>
                         <InputNumber
                             min={1}
+                            max={product.Stock || 1000}
                             value={quantity}
                             onChange={(val) => setQuantity(val)}
-                            style={{ width: 80 }}
+                            style={{width: 80}}
                         />
-                        <Button onClick={() => setQuantity(quantity + 1)}>+</Button>
+                        <Button
+                            onClick={() => setQuantity(quantity < (product.Stock || 1000) ? quantity + 1 : quantity)}
+                            disabled={quantity >= (product.Stock || 1000)}
+                        >
+                            +
+                        </Button>
                     </div>
 
                     <div className="mt-4">
                         <span className="font-semibold">Tạm tính:</span>
                         <span className="text-xl font-bold text-red-500 ml-2">
-                            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(subtotal)}
+                            {new Intl.NumberFormat('vi-VN', {style: 'currency', currency: 'VND'}).format(subtotal)}
                         </span>
                     </div>
 
@@ -231,36 +311,52 @@ function ProductDetail() {
                         type="primary"
                         danger
                         className="w-full mt-6"
+                        disabled={isAddToCartDisabled}
+                        onClick={handleAddToCart}
                     >
-                        Thêm vào giỏ hàng
+                        {product.Stock === 0 ? 'Hết hàng' : 'Thêm vào giỏ hàng'}
                     </Button>
                 </div>
             </div>
 
-            {/* Specs and Description Section */}
             <div className="mt-6 bg-white p-6 rounded shadow">
-                {/* Specifications */}
                 <div>
-                    <p className="font-semibold">Thông số kỹ thuật:</p>
+                    <p className="font-semibold">Thông tin sản phẩm:</p>
                     <ul className="list-disc pl-5 mt-2">
-                        {Object.values(specs.Content).map((spec, i) => (
-                            <li key={i} className="text-sm text-gray-600">
-                                {spec.name}: {stripHtmlTags(spec.value)}
-                            </li>
-                        ))}
+                        {specs?.Content && Object.keys(specs.Content).length > 0 ? (
+                            Object.entries(specs.Content).map(([key, spec], i) => (
+                                <li key={i} className="text-sm text-gray-600">
+                                    {spec.name || key}: {stripHtmlTags(spec.value) || 'Không có giá trị'}
+                                </li>
+                            ))
+                        ) : (
+                            <li className="text-sm text-gray-600">Không có thông tin sản phẩm</li>
+                        )}
                     </ul>
-                    <p className="text-sm text-gray-600 mt-2">
-                        Bảo hành: {specs.Operation.warranty_time_period.value} ({specs.Operation.warranty_form.value})
-                    </p>
+                    <ul className="list-disc pl-5 mt-2">
+                        {specs?.Operation && Object.keys(specs.Operation).length > 0 ? (
+                            Object.entries(specs.Operation).map(([key, spec], i) => (
+                                <li key={i} className="text-sm text-gray-600">
+                                    {spec.name || key}: {stripHtmlTags(spec.value) || 'Không có giá trị'}
+                                </li>
+                            ))
+                        ) : (
+                            <li className="text-sm text-gray-600">Không có thông tin vận hành</li>
+                        )}
+                    </ul>
+                    <p className="text-sm text-gray-600 mt-2">Tồn kho: {product.Stock || 'Không có thông tin'}</p>
+                    <p className="text-sm text-gray-600 mt-2">Trạng
+                        thái: {product.InventoryStatus || 'Không có thông tin'}</p>
+                    <p className="text-sm text-gray-600 mt-2">Nhà bán: {product.Seller || 'Không có thông tin'}</p>
                 </div>
 
-                {/* Description */}
                 <div className="mt-6">
                     <p className="font-semibold">Mô tả sản phẩm:</p>
                     {showFullDescription ? (
                         <div>
                             <p className="text-gray-700 text-sm whitespace-pre-line">
-                                <div dangerouslySetInnerHTML={{ __html: product.Description || 'Chưa có mô tả chi tiết.' }} />
+                                <div
+                                    dangerouslySetInnerHTML={{__html: product.Description || 'Chưa có mô tả chi tiết.'}}/>
                             </p>
                             <Button
                                 type="link"
@@ -287,96 +383,93 @@ function ProductDetail() {
                 </div>
             </div>
 
-            {/* Similar Products Comparison Section */}
             <div className="mt-6 bg-white p-6 rounded shadow">
                 <h2 className="text-xl font-bold mb-4">So sánh sản phẩm tương tự</h2>
                 {similarProducts.length > 0 ? (
                     <div className="overflow-x-auto">
                         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                            {/* Cột sản phẩm hiện tại */}
                             <div className="border p-4 rounded min-w-[200px]">
-                                <p className="font-semibold text-center">{product.Name}</p>
+                                <p className="font-semibold text-center">{product.Name || 'Không có tên'}</p>
                                 <Image
                                     src={mainImage}
-                                    alt={product.Name}
+                                    alt={product.Name || 'Sản phẩm'}
                                     width="100%"
                                     height={150}
-                                    style={{ objectFit: 'contain' }}
+                                    style={{objectFit: 'contain'}}
                                     className="mt-2"
                                 />
                                 <Button type="primary" className="w-full mt-2">
                                     Thêm vào giỏ
                                 </Button>
                                 <p className="text-red-500 font-bold mt-2 text-center">
-                                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.Price)}
+                                    {product.Price
+                                        ? new Intl.NumberFormat('vi-VN', {
+                                            style: 'currency',
+                                            currency: 'VND'
+                                        }).format(product.Price)
+                                        : 'Không có giá'}
                                 </p>
                                 <p className="text-center mt-1">
-                                    {product.RatingAverage} ★ ({product.ReviewCount})
+                                    {product.RatingAverage || 0} ★ ({product.ReviewCount || 0})
                                 </p>
                                 <p className="text-center mt-1">Nhà bán: {product.Seller || 'N/A'}</p>
-                                <p className="text-center mt-1">
-                                    ROM: {JSON.parse(product.SpecificationsFull).Content.storage?.value || 'N/A'}
-                                </p>
-                                <p className="text-center mt-1">
-                                    RAM: {JSON.parse(product.SpecificationsFull).Content.ram?.value || 'N/A'}
-                                </p>
-                                <p className="text-center mt-1">
-                                    GPU: {JSON.parse(product.SpecificationsFull).Content.gpu?.value || 'N/A'}
-                                </p>
-                                <p className="text-center mt-1">
-                                    Chipset: {JSON.parse(product.SpecificationsFull).Content.chipset?.value || 'N/A'}
-                                </p>
-                                <p className="text-center mt-1">
-                                    Màn hình: {JSON.parse(product.SpecificationsFull).Content.display_technology?.value || 'N/A'}
-                                </p>
-                                <p className="text-center mt-1">
-                                    Tốc độ CPU: {JSON.parse(product.SpecificationsFull).Content.cpu_speed?.value || 'N/A'}
-                                </p>
+                                {Object.entries(specs.Content || {}).map(([key, spec], i) => (
+                                    <p key={i} className="text-center mt-1">
+                                        {spec.name || key}: {stripHtmlTags(spec.value) || 'N/A'}
+                                    </p>
+                                ))}
                             </div>
 
-                            {/* Các cột sản phẩm tương tự */}
                             {similarProducts.map((similarProduct, idx) => {
-                                const specs = JSON.parse(similarProduct.SpecificationsFull);
-                                const firstImage = similarProduct.ImagesURL;
+                                let similarSpecs = {};
+                                try {
+                                    similarSpecs = similarProduct.SpecificationsFull
+                                        ? JSON.parse(similarProduct.SpecificationsFull)
+                                        : {Content: {}};
+                                } catch (parseError) {
+                                    console.error('Error parsing similar product specs:', parseError);
+                                    similarSpecs = {Content: {}};
+                                }
+                                const firstImage = similarProduct.ImagesURL
+                                    ? similarProduct.ImagesURL.split('|')[0]
+                                    : similarProduct.MainImage || 'https://via.placeholder.com/150';
                                 return (
-                                    <div key={idx} className="border p-4 rounded min-w-[200px]">
-                                        <p className="font-semibold text-center">{similarProduct.Name}</p>
+                                    <div className="border p-2 rounded min-w-[200px] max-h-[134px] overflow-hidden">
+                                        <p className="font-semibold text-center">{similarProduct.Name || 'Không có tên'}</p>
                                         <Image
                                             src={firstImage}
-                                            alt={similarProduct.Name}
+                                            alt={similarProduct.Name || 'Sản phẩm'}
                                             width="100%"
                                             height={150}
-                                            style={{ objectFit: 'contain' }}
-                                            className="mt-2"
+                                            style={{
+                                                objectFit: 'cover',
+                                                maxWidth: '100%',
+                                                maxHeight: '150px',
+                                                display: 'block'
+                                            }}
+                                            className="mt-0"
+                                        />
                                         />
                                         <Button type="primary" className="w-full mt-2">
                                             Thêm vào giỏ
                                         </Button>
                                         <p className="text-red-500 font-bold mt-2 text-center">
-                                            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(similarProduct.Price)}
+                                            {similarProduct.Price
+                                                ? new Intl.NumberFormat('vi-VN', {
+                                                    style: 'currency',
+                                                    currency: 'VND'
+                                                }).format(similarProduct.Price)
+                                                : 'Không có giá'}
                                         </p>
                                         <p className="text-center mt-1">
-                                            {similarProduct.RatingAverage} ★ ({similarProduct.ReviewCount})
+                                            {similarProduct.RatingAverage || 0} ★ ({similarProduct.ReviewCount || 0})
                                         </p>
                                         <p className="text-center mt-1">Nhà bán: {similarProduct.Seller || 'N/A'}</p>
-                                        <p className="text-center mt-1">
-                                            ROM: {specs.Content.storage?.value || 'N/A'}
-                                        </p>
-                                        <p className="text-center mt-1">
-                                            RAM: {specs.Content.ram?.value || 'N/A'}
-                                        </p>
-                                        <p className="text-center mt-1">
-                                            GPU: {specs.Content.gpu?.value || 'N/A'}
-                                        </p>
-                                        <p className="text-center mt-1">
-                                            Chipset: {specs.Content.chipset?.value || 'N/A'}
-                                        </p>
-                                        <p className="text-center mt-1">
-                                            Màn hình: {specs.Content.display_technology?.value || 'N/A'}
-                                        </p>
-                                        <p className="text-center mt-1">
-                                            Tốc độ CPU: {specs.Content.cpu_speed?.value || 'N/A'}
-                                        </p>
+                                        {Object.entries(similarSpecs.Content || {}).map(([key, spec], i) => (
+                                            <p key={i} className="text-center mt-1">
+                                                {spec.name || key}: {stripHtmlTags(spec.value) || 'N/A'}
+                                            </p>
+                                        ))}
                                     </div>
                                 );
                             })}
