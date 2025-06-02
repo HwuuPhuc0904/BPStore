@@ -9,22 +9,13 @@ import {
 import ImageSlider from "../../../Components/ImageSlider";
 import InterfaceProduct from "../../../Components/InterfaceProduct";
 import config from "../../../config";
-import { useAuth } from "../../../AuthContext"; // Thêm useAuth
+import { useAuth } from "../../../AuthContext";
 
 const navigation = [
     { name: "Products", href: "/products" },
     { name: "Features", href: "#" },
     { name: "Marketplace", href: "#" },
     { name: "About me", href: "#" },
-];
-
-const categories = [
-    { name: "Đồ điện tử", src: "icons/electronics.png" },
-    { name: "Điện thoại", src: "icons/smartphone.png" },
-    { name: "Nhà bếp", src: "icons/kitchen.png" },
-    { name: "Quần áo", src: "icons/clother.png" },
-    { name: "Mỹ Phẩm", src: "icons/cosmetics.png" },
-    { name: "Sách", src: "icons/book.png" },
 ];
 
 const flashSaleProducts = [
@@ -66,6 +57,20 @@ const flashSaleProducts = [
     },
 ];
 
+const categoryMapping = {
+    "dien-thoai-may-tinh-bang": { name: "Điện Thoại & Máy Tính Bảng", src: "/icons/smartphone.png" },
+    "nha-cua-doi-song": { name: "Nhà Cửa & Đời Sống", src: "/icons/Home.png" },
+    "do-choi-me-be": { name: "Đồ Chơi & Mẹ Bé", src: "/icons/toy.png" },
+    "thiet-bi-kts-phu-kien-so": { name: "Thiết Bị KTS & Phụ Kiện Số", src: "/icons/DigitalDevices.png" },
+    "dien-gia-dung": { name: "Điện Gia Dụng", src: "/icons/electronics.png" },
+    "lam-dep-suc-khoe": { name: "Làm Đẹp & Sức Khỏe", src: "/icons/BeautyHealth.png" },
+    "o-to-xe-may-xe-dap": { name: "Ô Tô, Xe Máy & Xe Đạp", src: "/icons/Car.png" },
+    "thoi-trang-nu": { name: "Thời Trang Nữ", src: "/icons/ThoiTrangNu.png" },
+    "laptop-may-vi-tinh-linh-kien": { name: "Laptop & Linh Kiện", src: "/icons/laptop.png" },
+    "giay-dep-nam": { name: "Giày Dép Nam", src: "/icons/GiayDepNam.png" },
+    "thoi-trang-nam": { name: "Thời Trang Nam", src: "/icons/clotherman.png" },
+    "giay-dep-nu": { name: "Giày Dép Nữ", src: "/icons/GiayDepNu.png" },
+};
 const getFirstImage = (imagesUrlString) => {
     if (!imagesUrlString) return "";
     const urls = imagesUrlString.split("|");
@@ -183,12 +188,24 @@ const SkeletonCard = () => (
 export default function Home() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [products, setProducts] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [categoryLoading, setCategoryLoading] = useState(true);
     const [error, setError] = useState(null);
-    const { isAuthenticated, logout, username } = useAuth(); // Sử dụng useAuth
+    const [categoryError, setCategoryError] = useState(null);
+    const { isAuthenticated, logout, username } = useAuth();
     const navigate = useNavigate();
 
     const endTime = new Date("May 18, 2025 20:09:00 GMT+0700");
+
+    const fallbackCategories = [
+        { name: "Đồ điện tử", src: "/logo.png" },
+        { name: "Điện thoại", src: "/logo.png" },
+        { name: "Nhà bếp", src: "/logo.png" },
+        { name: "Quần áo", src: "/logo.png" },
+        { name: "Mỹ Phẩm", src: "/logo.png" },
+        { name: "Sách", src: "/logo.png" },
+    ];
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -218,7 +235,39 @@ export default function Home() {
             }
         };
 
+        const fetchCategories = async () => {
+            setCategoryLoading(true);
+            try {
+                const response = await fetch(
+                    `${config.apiUrl}/api/v1/products/category`,
+                    {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "ngrok-skip-browser-warning": "true",
+                        },
+                    }
+                );
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const data = await response.json();
+                console.log("API categories response:", data);
+                const categoryList = (data.categories || []).map(slug => ({
+                    name: categoryMapping[slug]?.name || slug.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase()),
+                    src: categoryMapping[slug]?.src || "/logo.png",
+                }));
+                setCategories(categoryList);
+            } catch (err) {
+                console.error("Error fetching categories:", err);
+                setCategoryError(err.message);
+            } finally {
+                setCategoryLoading(false);
+            }
+        };
+
         fetchProducts();
+        fetchCategories();
     }, []);
 
     const NavLink = ({ item }) => (
@@ -401,10 +450,10 @@ export default function Home() {
                         },
                     ].map((item) => (
                         <div key={item.title} className="flex flex-col items-center text-center">
-                <span
-                    className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-indigo-50 p-3 ring-4 ring-indigo-100">
-                    <img src={item.icon} alt="icon" className="h-8 w-8"/>
-                </span>
+                            <span
+                                className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-indigo-50 p-3 ring-4 ring-indigo-100">
+                                <img src={item.icon} alt="icon" className="h-8 w-8"/>
+                            </span>
                             <h3 className="mb-2 text-lg font-extrabold text-gray-800 md:text-2xl">
                                 {item.title}
                             </h3>
@@ -420,9 +469,37 @@ export default function Home() {
 
             <section className="mx-auto mt-8 max-w-7xl px-4">
                 <div className="grid grid-cols-3 gap-4 sm:grid-cols-6">
-                    {categories.map((cat) => (
-                        <InterfaceProduct key={cat.name} name={cat.name} src={cat.src}/>
-                    ))}
+                    {categoryLoading ? (
+                        Array.from({length: 6}).map((_, i) => (
+                            <div
+                                key={i}
+                                className="animate-pulse flex flex-col items-center gap-2 rounded-lg bg-gray-100 p-4"
+                            >
+                                <div className="h-12 w-12 rounded-full bg-gray-200"/>
+                                <div className="h-4 w-3/4 rounded bg-gray-200"/>
+                            </div>
+                        ))
+                    ) : categoryError ? (
+                        <p className="text-center text-red-500 col-span-full">
+                            {categoryError}. Hiển thị danh mục mặc định.
+                        </p>
+                    ) : categories.length > 0 ? (
+                        categories.map((cat) => (
+                            <InterfaceProduct
+                                key={cat.name}
+                                name={cat.name}
+                                src={cat.src}
+                            />
+                        ))
+                    ) : (
+                        fallbackCategories.map((cat) => (
+                            <InterfaceProduct
+                                key={cat.name}
+                                name={cat.name}
+                                src={cat.src}
+                            />
+                        ))
+                    )}
                 </div>
             </section>
 

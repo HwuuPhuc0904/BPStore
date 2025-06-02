@@ -14,9 +14,9 @@ export default function Products() {
       {/* Main content area - Starts below Topbar */}
       <div className="flex flex-1 mt-16">
         {/* Sidebar Filters - Fixed width, full height */}
-        <div className="w-64 bg-gray-100">
-          <ProductFilter />
-        </div>
+        {/*<div className="w-64 bg-gray-100">*/}
+        {/*  <ProductFilter />*/}
+        {/*</div>*/}
 
         {/* Product Grid - Flexible width */}
         <div className="flex-1 p-4">
