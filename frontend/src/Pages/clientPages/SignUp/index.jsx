@@ -29,8 +29,7 @@ export default function SignUp() {
         "Japan",
         "South Korea",
         "China",
-        "Singapore",
-        "Malaysia"
+        "Singapore"
     ];
 
     // Handle signup submission

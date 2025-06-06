@@ -53,10 +53,10 @@ const ChangeUserInformation = ({ API_URL, setActiveView }) => {
                         });
                     }
                 } else {
-                    setError('Không thể tải thông tin người dùng.');
+                    setError('lỗi ko tải đc thông tin user.');
                 }
             } catch (err) {
-                setError('Lỗi tải thông tin người dùng: ' + err.message);
+                setError('Lỗi tải thông tin useruser: ' + err.message);
             }
         };
         fetchUserInfo();
