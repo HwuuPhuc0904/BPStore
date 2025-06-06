@@ -331,7 +331,7 @@ export default function ProductGrid() {
                                     <button
                                         className="w-full bg-blue-500 text-white py-1.5 rounded-lg hover:bg-blue-600 transition-colors text-sm mt-auto"
                                     >
-                                        Thêm vào giỏ hàng
+                                        Thêm vào giỏ 
                                     </button>
                                 </div>
                             </Link>
@@ -341,7 +341,7 @@ export default function ProductGrid() {
 
                 {!loading && !error && products.length === 0 && (
                     <div className="text-center py-10">
-                        <p className="text-gray-500 font-medium text-lg">Không tìm thấy sản phẩm</p>
+                        <p className="text-gray-500 font-medium text-lg">Không tìm thấy hànghàng</p>
                     </div>
                 )}
 
