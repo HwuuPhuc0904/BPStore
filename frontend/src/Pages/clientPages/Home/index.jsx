@@ -402,8 +402,8 @@ export default function Home() {
                         Trải nghiệm mua hàng <span className="inline-block bg-white/20 px-2">không giới hạn</span>
                     </h1>
                     <p className="text-sm sm:text-lg md:text-xl">
-                        Mua sắm mọi lúc, mọi nơi, mọi thiết bị với ShopSmart – nền tảng thương mại điện tử tối ưu cho
-                        bạn.
+                        Mua sắm mọi lúc, mọi nơi, mọi thiết bị với BPSTORE – nền tảng thương mại điện tử tích hợp AI
+                         giúp bạn trở thành người tiêu dùng thông minh .
                     </p>
                     <div className="flex flex-wrap items-center justify-center gap-4">
                         <Link
